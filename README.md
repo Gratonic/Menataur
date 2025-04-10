@@ -22,6 +22,14 @@ pieces of that lego structure are the configuration settings for that lego struc
 function that attaches that lego structure to the lego project. Alternatively, you can think of it sort of like a webpage written
 in just HTML and CSS.
 
+# :: OS Support :: #
+
+All Operating Systems
+
+# :: Installation :: #
+
+pip3 install menataur
+
 # :: Example Usage :: #
 
 ```python
