@@ -26,7 +26,7 @@ in just HTML and CSS.
 
 ```python
 import menataur
-menu = menataur.Minotaur()
+menu = menataur.Menataur()
 menu.add_header(
     ascii_art_title=ascii_art_title,
     small_title=small_title,
@@ -51,8 +51,8 @@ menu.add_footer(text_color="light_yellow", text="Thank you for using Minotaur!")
 menu.execute()
 ```
 
-NOTE: multipule menu obects can be created and used at once, ie: `main_menu = menataur.Minotaur()`, `pageone = menataur.Minotaur()`
-, `pagetwo = menataur.Minotaur()`
+NOTE: multipule menu obects can be created and used at once, ie: `main_menu = menataur.Menataur()`, `pageone = menataur.Menataur()`
+, `pagetwo = menataur.Menataur()`
 
 
 # Breakdown
@@ -61,7 +61,7 @@ NOTE: multipule menu obects can be created and used at once, ie: `main_menu = me
 import menataur
 
 ## Creates an instance of Minotaur (the menu class)
-menu = menataur.Minotaur()
+menu = menataur.Menataur()
 
 ## Add the header to the menu
 menu.add_header(
