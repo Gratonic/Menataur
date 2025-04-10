@@ -60,7 +60,7 @@ NOTE: multipule menu obects can be created and used at once, ie: `main_menu = me
 ## Imports the module
 import menataur
 
-## Creates an instance of Minotaur (the menu class)
+## Creates an instance of Menataur (the menu class)
 menu = menataur.Menataur()
 
 ## Add the header to the menu
@@ -88,7 +88,7 @@ menu.add_paragraph(text_color="grey", text="All three")
 menu.add_body(accent_color="magenta", menu_option_number=4, menu_option_color="light_cyan", menu_option="The Works")
 
 ## Add a footer (thank you message)
-menu.add_footer(text_color="light_yellow", text="Thank you for using Minotaur!")
+menu.add_footer(text_color="light_yellow", text="Thank you for using Menataur!")
 
 ## Completes and calls the menu
 menu.execute()
