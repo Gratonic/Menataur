@@ -31,4 +31,4 @@ setup.cfg
 MANIFEST
 
 # Ignore the venv dir
-menataur_venv/
+*menataur_venv
