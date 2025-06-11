@@ -29,3 +29,6 @@ env/
 setup.py
 setup.cfg
 MANIFEST
+
+# Ignore the venv dir
+menataur_venv/
