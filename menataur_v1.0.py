@@ -9,7 +9,7 @@ import json
 # used to validate colors and retrieve their respective colorama color objects
 class Palettaur():
     def __init__(self):
-        # supported colors for debugging
+        # colors supported by the module - Palettaur
         self._supported_colors = [
             "blue", "light_blue", 
             "cyan", "light_cyan", 
@@ -40,7 +40,7 @@ class Palettaur():
             "white": Back.WHITE, "gray": Back.LIGHTBLACK_EX, "black": Back.BLACK
         }
 
-    # :: Main Methods :: #
+    # :: Main Functionality :: #
 
     # validates and retrieves the colorama color object of a foreground color
     def validate_foreground_color(self, color: str) -> object:
@@ -67,9 +67,9 @@ class Palettaur():
                 print(f"{Fore.LIGHTCYAN_EX}{color_name}{Fore.RESET}")
             exit()
 
-    # :; Debug Methods :: #
+    # :; Helpful/Debug Functionality :: #
 
-    # lists the supported colors for debugging purposes
+    # lists the colors supported by the module
     def list_supported_colors(self):
         print(f"{Fore.YELLOW}[*] Supported Colors: \n{Fore.RESET}")
         for index, color in enumerate(self._supported_colors, start=1):
@@ -81,13 +81,15 @@ class Menu():
         # placeholder for the menu
         self._menu = ""
         # format string placeholders for the menu elements
-        self._header = "{ascii_title}{title_bar}\n{program_info_message}\n{os_support_message}{foreground_reset}"
+        self._header = "{ascii_title}\n{title_bar}\n{program_info_message}\n{os_support_message}{foreground_reset}"
         self._description = "{description}{foreground_reset}"
         self._option = "{menu_option_number}{seperator} {menu_option}{foreground_reset}"
 
         # placeholders for input and input_message - different compared to the others
         self._input = ""
         self._input_message = "{input_message}{foreground_reset}"
+
+    # :: Main Functionality :: #
 
     # constructs a menu element and adds it to the menu
     def _construct(self, element: str) -> None:
@@ -99,7 +101,16 @@ class Menu():
     
     # gets the user input using the _input_message and returns the user's input
     def get_user_input(self):
-        return input(self._input_message)
+        if self._input_message != "{input_message}{foreground_reset}":
+            try:
+                return input(self._input_message)
+            except KeyboardInterrupt:
+                print("\n")
+                pass
+            except Exception as e:
+                print(e)
+        else:
+            print(f"{Fore.RED}[!] Error: Menu input_message needs to be set.{Fore.RESET}")
     
     # displays the menu in its current state
     def display_menu(self):
@@ -176,7 +187,7 @@ class Menu():
         # constructs the colorful and complete menu_option using the menu_option_color and menu_option
         menu_option = f"{menu_option_color}{menu_option}"
 
-        self._construct(self._option(
+        self._construct(self._option.format(
             menu_option_number=menu_option_number,
             seperator=seperator,
             menu_option=menu_option,
@@ -193,20 +204,23 @@ class Menu():
         # constructs the colorful and complete input_message using the input_message_color and input_message
         input_message = f"{input_message_color}{input_message}"
         
-        self._configure_input_message(self._input_message(
+        self._configure_input_message(self._input_message.format(
             input_message=input_message,
             foreground_reset=Fore.RESET
         ))
+    
+    # :: Special Functionality :: #
+
+    # calls the menu in its current state with its input field (if it has been configured)
+    def call_menu(self):
+        print(self._menu)
+        self.get_user_input()
 
 class Menu_Stack():
     def __init__(self):
         pass
 
 class Menu_Interface():
-    def __init__(self):
-        pass
-
-class Debugger():
     def __init__(self):
         pass
 

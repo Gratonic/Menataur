@@ -107,3 +107,36 @@ class Menu():
             text=text,
             reset=reset
         ))
+
+# Time Saver Test Code
+
+test_menu = Menu()
+test_menu.add_header(
+    ascii_title_colors=["red", "white", "blue"],
+    ascii_title="aauiusffuhasfihsaiufhisafhiusahf",
+    title_bar_color="green",
+    title_bar="____________________________________/",
+    program_name_color="yellow",
+    program_name="test_program",
+    program_version_color="magenta",
+    program_version=1.0,
+    os_support_foreground_color="blue",
+    os_support_background_color="cyan",
+    os_support_message="The follow OS'es are supported:",
+    supported_operating_systems_info=["Linux", "MacOS"]
+)
+
+test_menu.add_description(description_color="green", description="This option gets you all the babes.")
+
+test_menu.add_option(
+    menu_option_number_color="yellow", 
+    menu_option_number=1, 
+    menu_option_color="red", 
+    seperator_color="cyan", 
+    seperator=")", 
+    menu_option="call the babes over bruh"
+)
+
+test_menu.set_input_message(input_message_color="cyan", input_message="Enter the number to get the babes: ")
+
+test_menu.call_menu()
