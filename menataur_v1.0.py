@@ -83,7 +83,9 @@ class Menu():
         # format string placeholders for the menu elements
         self._header = "{ascii_title}\n{title_bar}\n{program_info_message}\n{os_support_message}{foreground_reset}"
         self._description = "{description}{foreground_reset}"
-        self._option = "{menu_option_number}{seperator} {menu_option}{foreground_reset}"
+        self._option_text = "{menu_option_number}{seperator} {menu_option}{foreground_reset}"
+        # special callable function object placeholder for the option element(s)
+        self.option_func_object = None
 
         # placeholders for input and input_message - different compared to the others
         self._input = ""
@@ -170,7 +172,7 @@ class Menu():
         ))
 
     # builds a menu option element and adds it to the menu using the internal construct function
-    def add_option(self, menu_option_number_color: str, menu_option_number: int, seperator_color: str, seperator: str, menu_option_color: str, menu_option: str) -> None:
+    def add_option(self, menu_option_number_color: str, menu_option_number: int, seperator_color: str, seperator: str, menu_option_color: str, menu_option: str, call_function_comps: list) -> None:
         # creates an instance of Palettaur for foreground and background color validation
         palettaur = Palettaur()
 
@@ -187,12 +189,25 @@ class Menu():
         # constructs the colorful and complete menu_option using the menu_option_color and menu_option
         menu_option = f"{menu_option_color}{menu_option}"
 
-        self._construct(self._option.format(
+        self._construct(self._option_text.format(
             menu_option_number=menu_option_number,
             seperator=seperator,
             menu_option=menu_option,
             foreground_reset=Fore.RESET
         ))
+
+        # validates the call function components list provided by the dev
+        if len(call_function_comps) != 2:
+            raise ValueError(f"{Fore.RED}[!] Error: The call_function_comps list must only contain 2 elements")
+        if not isinstance(call_function_comps[0], object):
+            raise ValueError(f"{Fore.RED}[!] Error: The first element in the call_function_comps list must be an object")
+        if not isinstance(call_function_comps[1], str):
+            raise ValueError(f"{Fore.RED}[!] Error: The second element in the call_function_comps list must be a string")
+        
+        # sets the option_func_object to the callable function object using getattr
+        function_object = call_function_comps[0]
+        function_name = call_function_comps[1]
+        self.option_func_object = getattr(function_object, function_name)
 
     # creates and sets the input message of the menu input field using the internal construct function
     def set_input_message(self, input_message_color: str, input_message: str) -> None:
@@ -216,9 +231,15 @@ class Menu():
         print(self._menu)
         self.get_user_input()
 
+# used to create menu stacks
 class Menu_Stack():
     def __init__(self):
-        pass
+        # menu stack placeholder
+        self._menu_stack = {}
+    
+    # adds a Menu to the initialized menu stack
+    def add_menu(self, menu_name: str, menu: Menu):
+        self._menu_stack[menu_name] = menu
 
 class Menu_Interface():
     def __init__(self):
