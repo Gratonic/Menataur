@@ -1,8 +1,8 @@
 # Imports the module
-import menataur
+import menataur_prototype
 
 # Creates an instance of Minotaur (the menu class)
-menu = minotaur.Menataur()
+menu = menataur_prototype.Menataur()
 
 # Define the elements for the menu
 ascii_art_title = r"""
