@@ -254,7 +254,7 @@ class Menataur():
         pass
 
     # menu building methods
-    def menu_from_params(ascii_title_colors: list, ascii_title: str, title_bar_color: str, title_bar: str, program_name_color: str, program_version_color: str, program_name: str, program_version: float, os_support_foreground_color: str, os_support_background_color: str, os_support_message: str, supported_operating_systems: list, description_colors: dict, descriptions: dict, option_number_color: str, seperator_color: str, seperator: str, option_colors: dict, options: dict, call_functions: dict, input_message_color: str, input_message: str):
+    def menu_from_params(self, ascii_title_colors: list, ascii_title: str, title_bar_color: str, title_bar: str, program_name_color: str, program_version_color: str, program_name: str, program_version: float, os_support_foreground_color: str, os_support_background_color: str, os_support_message: str, supported_operating_systems: list, description_colors: dict, descriptions: dict, option_number_color: str, seperator_color: str, seperator: str, option_colors: dict, options: dict, call_functions: dict, input_message_color: str, input_message: str):
         # initiates a Menu object
         menu = Menu()
 
@@ -292,7 +292,7 @@ class Menataur():
                 seperator=seperator,
                 menu_option_color=option_colors[index],
                 menu_option=options[index],
-                call_function=call_functions[str(index)]
+                call_function=call_functions[index]
             )
 
         # sets the Menu input message for its input field
@@ -418,15 +418,15 @@ ___  ___                 _
 menu = menataur.menu_from_params(
     ascii_title_colors=["red", "white", "blue"], 
     ascii_title=at, 
-    title_bar_color=["blue", "red"], 
+    title_bar_color="red", 
     title_bar="__________________________________________/", 
     program_name_color="cyan", 
     program_version_color="yellow", 
     program_name="Menataur", 
     program_version=1.0, 
     os_support_foreground_color="magenta", 
-    os_support_background_color="light_yellow", 
-    os_support_message="This Program Supports:", 
+    os_support_background_color="light_yellow",
+    os_support_message="This Program Supports:",
     supported_operating_systems=["Windows", "MacOS", "Linux"], 
     description_colors={0: "yellow", 1: "yellow", 2: "yellow", 3: "yellow", 4: "yellow"}, 
     descriptions={0: "exits the program", 1: "goes to the fruit menu", 2: "goes to the vegetable menu", 3: "goes to the dessert menu", 4: "returns to the previous menu"}, 
