@@ -108,7 +108,7 @@ class Menu():
                 return input(self._input_message)
             except KeyboardInterrupt:
                 print("\n")
-                pass
+                exit()
             except Exception as e:
                 print(e)
         else:
@@ -254,7 +254,7 @@ class Menataur():
         pass
 
     # menu building methods
-    def menu_from_params(ascii_title_colors: list, ascii_title: str, title_bar_colors: str, title_bar: str, program_name_color: str, program_version_color: str, program_name: str, program_version: float, os_support_foreground_color: str, os_support_background_color: str, os_support_message: str, supported_operating_systems: list, description_colors: dict, descriptions: dict, option_number_color: str, seperator_color: str, seperator: str, option_colors: dict, options: dict, call_functions: dict, input_message_color: str, input_message: str):
+    def menu_from_params(ascii_title_colors: list, ascii_title: str, title_bar_color: str, title_bar: str, program_name_color: str, program_version_color: str, program_name: str, program_version: float, os_support_foreground_color: str, os_support_background_color: str, os_support_message: str, supported_operating_systems: list, description_colors: dict, descriptions: dict, option_number_color: str, seperator_color: str, seperator: str, option_colors: dict, options: dict, call_functions: dict, input_message_color: str, input_message: str):
         # initiates a Menu object
         menu = Menu()
 
@@ -262,7 +262,7 @@ class Menataur():
         menu.add_header(
             ascii_title_colors=ascii_title_colors,
             ascii_title=ascii_title,
-            title_bar_color=title_bar_colors,
+            title_bar_color=title_bar_color,
             title_bar=title_bar,
             program_name_color=program_name_color,
             program_version_color=program_version_color,
@@ -274,26 +274,26 @@ class Menataur():
             supported_operating_systems_info=supported_operating_systems
         )
 
-        # assembles the Menu descriptions
+        # assembles the Menu descriptions and options
         for index in range(len(descriptions)):
+            # grabs the description and option info for the current description and option
             description_color = description_colors[index]
             description = descriptions[index]
+
             menu.add_description(
                 description_color=description_color,
                 description=description
             )
 
-        # assembles the Menu options
-        for index in range(len(options)):
-                menu.add_option(
-                    menu_option_number_color=option_number_color,
-                    menu_option_number=int(index),
-                    seperator_color=seperator_color,
-                    seperator=seperator,
-                    menu_option_color=option_colors[index],
-                    menu_option=options[index],
-                    call_function=call_functions[str(index)]
-                )
+            menu.add_option(
+                menu_option_number_color=option_number_color,
+                menu_option_number=int(index),
+                seperator_color=seperator_color,
+                seperator=seperator,
+                menu_option_color=option_colors[index],
+                menu_option=options[index],
+                call_function=call_functions[str(index)]
+            )
 
         # sets the Menu input message for its input field
         menu.set_input_message(
@@ -406,9 +406,38 @@ def test():
     print("It works!!!")
     exit()
 
-menu = menataur.menu_from_json(
-    file_path="./main_menu.json", 
-    call_functions={"0": test, "1": test, "2": test, "3": test, "4": test}
+at = r"""
+___  ___                 _                   
+|  \/  |                | |                  
+| .  . | ___ _ __   __ _| |_ __ _ _   _ _ __ 
+| |\/| |/ _ \ '_ \ / _` | __/ _` | | | | '__|
+| |  | |  __/ | | | (_| | || (_| | |_| | |   
+\_|  |_/\___|_| |_|\__,_|\__\__,_|\__,_|_|   
+"""
+
+menu = menataur.menu_from_params(
+    ascii_title_colors=["red", "white", "blue"], 
+    ascii_title=at, 
+    title_bar_color=["blue", "red"], 
+    title_bar="__________________________________________/", 
+    program_name_color="cyan", 
+    program_version_color="yellow", 
+    program_name="Menataur", 
+    program_version=1.0, 
+    os_support_foreground_color="magenta", 
+    os_support_background_color="light_yellow", 
+    os_support_message="This Program Supports:", 
+    supported_operating_systems=["Windows", "MacOS", "Linux"], 
+    description_colors={0: "yellow", 1: "yellow", 2: "yellow", 3: "yellow", 4: "yellow"}, 
+    descriptions={0: "exits the program", 1: "goes to the fruit menu", 2: "goes to the vegetable menu", 3: "goes to the dessert menu", 4: "returns to the previous menu"}, 
+    option_number_color="green", 
+    seperator_color="yellow", 
+    seperator=")", 
+    option_colors={0: "blue", 1: "blue", 2: "blue", 3: "blue", 4: "blue"}, 
+    options={0: "exit", 1: "fruit menu", 2: "vegetable menu", 3: "dessert menu", 4: "previous menu"}, 
+    call_functions={0: test, 1: test, 2: test, 3: test, 4: test}, 
+    input_message_color="cyan", 
+    input_message="Please Choose An Option From The Menu [Ex: 1]: "
 )
 
-menu.display_menu()
+menu.call_menu()
