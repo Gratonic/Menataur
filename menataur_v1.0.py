@@ -81,11 +81,11 @@ class Menu():
         # placeholder for the menu
         self._menu = ""
         # format string placeholders for the menu elements
-        self._header = "{ascii_title}\n{title_bar}\n{program_info_message}\n{os_support_message}{foreground_reset}"
+        self._header = "{ascii_title}\n{title_bar}\n{program_info_message}\n{os_support_message}{foreground_reset}\n"
         self._description = "{description}{foreground_reset}"
         self._option_text = "{menu_option_number}{seperator} {menu_option}{foreground_reset}"
-        # special callable function object placeholder for the option element(s)
-        self.option_func_object = None
+        # special callable function objects placeholder for the option element(s) (one function for each option)
+        self.call_functions = {}
 
         # placeholders for input and input_message - different compared to the others
         self._input = ""
@@ -147,7 +147,6 @@ class Menu():
             else:
                 os_support_message = os_support_message + f" {os_support_background_color}{os}{Back.RESET}"
 
-
         self._construct(self._header.format(
             ascii_title=title,
             title_bar=title_bar,
@@ -172,7 +171,7 @@ class Menu():
         ))
 
     # builds a menu option element and adds it to the menu using the internal construct function
-    def add_option(self, menu_option_number_color: str, menu_option_number: int, seperator_color: str, seperator: str, menu_option_color: str, menu_option: str, call_function_comps: list) -> None:
+    def add_option(self, menu_option_number_color: str, menu_option_number: int, seperator_color: str, seperator: str, menu_option_color: str, menu_option: str, call_function=object) -> None:
         # creates an instance of Palettaur for foreground and background color validation
         palettaur = Palettaur()
 
@@ -196,18 +195,7 @@ class Menu():
             foreground_reset=Fore.RESET
         ))
 
-        # validates the call function components list provided by the dev
-        if len(call_function_comps) != 2:
-            raise ValueError(f"{Fore.RED}[!] Error: The call_function_comps list must only contain 2 elements")
-        if not isinstance(call_function_comps[0], object):
-            raise ValueError(f"{Fore.RED}[!] Error: The first element in the call_function_comps list must be an object")
-        if not isinstance(call_function_comps[1], str):
-            raise ValueError(f"{Fore.RED}[!] Error: The second element in the call_function_comps list must be a string")
-        
-        # sets the option_func_object to the callable function object using getattr
-        function_object = call_function_comps[0]
-        function_name = call_function_comps[1]
-        self.option_func_object = getattr(function_object, function_name)
+        self.call_functions[menu_option_number] = call_function
 
     # creates and sets the input message of the menu input field using the internal construct function
     def set_input_message(self, input_message_color: str, input_message: str) -> None:
@@ -227,9 +215,14 @@ class Menu():
     # :: Special Functionality :: #
 
     # calls the menu in its current state with its input field (if it has been configured)
-    def call_menu(self):
+    def call_menu(self) -> int:
         print(self._menu)
-        self.get_user_input()
+        while True:
+            user_input = self.get_user_input()
+            if isinstance(user_input, int) != True:
+                print(f"{Fore.RED}[!] Error: You must enter a number{Fore.RESET}")
+            else:
+                return user_input
 
 # used to create menu stacks
 class Menu_Stack():
@@ -238,13 +231,184 @@ class Menu_Stack():
         self._menu_stack = {}
     
     # adds a Menu to the initialized menu stack
-    def add_menu(self, menu_name: str, menu: Menu):
+    def add_menu(self, menu_name: str, menu: Menu) -> None:
         self._menu_stack[menu_name] = menu
+    
+    def retrieve_menu(self, menu_name: str) -> Menu:
+        menu = self._menu_stack[menu_name]
+        return menu
 
 class Menu_Interface():
     def __init__(self):
-        pass
+        self._menu_interface = {}
+    
+    def add_menu_stack(self, menu_stack_name: str, menu_stack: Menu_Stack):
+        self._menu_interface[menu_stack_name] = menu_stack
+
+    def grab_menu(self, menu_stack_name: str, menu_name: str) -> Menu:
+        menu = self._menu_interface[menu_stack_name].retrieve_menu(menu_name)
+        return menu
 
 class Menataur():
     def __init__(self):
         pass
+
+    # menu building methods
+    def menu_from_params(ascii_title_colors: list, ascii_title: str, title_bar_colors: str, title_bar: str, program_name_color: str, program_version_color: str, program_name: str, program_version: float, os_support_foreground_color: str, os_support_background_color: str, os_support_message: str, supported_operating_systems: list, description_colors: dict, descriptions: dict, option_number_color: str, seperator_color: str, seperator: str, option_colors: dict, options: dict, call_functions: dict, input_message_color: str, input_message: str):
+        # initiates a Menu object
+        menu = Menu()
+
+        # assembles the Menu header
+        menu.add_header(
+            ascii_title_colors=ascii_title_colors,
+            ascii_title=ascii_title,
+            title_bar_color=title_bar_colors,
+            title_bar=title_bar,
+            program_name_color=program_name_color,
+            program_version_color=program_version_color,
+            program_name=program_name,
+            program_version=program_version,
+            os_support_foreground_color=os_support_foreground_color,
+            os_support_background_color=os_support_background_color,
+            os_support_message=os_support_message,
+            supported_operating_systems_info=supported_operating_systems
+        )
+
+        # assembles the Menu descriptions
+        for index in range(len(descriptions)):
+            description_color = description_colors[index]
+            description = descriptions[index]
+            menu.add_description(
+                description_color=description_color,
+                description=description
+            )
+
+        # assembles the Menu options
+        for index in range(len(options)):
+                menu.add_option(
+                    menu_option_number_color=option_number_color,
+                    menu_option_number=int(index),
+                    seperator_color=seperator_color,
+                    seperator=seperator,
+                    menu_option_color=option_colors[index],
+                    menu_option=options[index],
+                    call_function=call_functions[str(index)]
+                )
+
+        # sets the Menu input message for its input field
+        menu.set_input_message(
+            input_message_color=input_message_color,
+            input_message=input_message
+        )
+
+        # TODO: add call funcs
+
+        # returns the Menu object
+        return menu
+
+    def menu_from_json(self, file_path: str, call_functions: dict) -> Menu:
+        # initiates a Menu object
+        menu = Menu()
+
+        # attempts to load the json data
+        try:
+            with open(file_path, "r") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            print(f"{Fore.RED}[!] Error: \"{Fore.YELLOW}{file_path}{Fore.RED}\" is not a valid file path{Fore.RESET}")
+            exit()
+        except Exception as e:
+            print(e)
+            exit()
+
+        # assembles the Menu header using the json data
+        ascii_title_colors = data["header"]["ascii_title_colors"]
+        with open(data["header"]["ascii_title"], "r") as ascii_title_file:
+            # reads the lines of the ascii_title file and combines them into a string, respecting line breaks
+            ascii_title = "".join(ascii_title_file.readlines())
+        
+        title_bar_colors = data["header"]["title_bar_color"]
+        title_bar = data["header"]["title_bar"]
+
+        program_name_color = data["header"]["program_name_color"]
+        program_version_color = data["header"]["program_version_color"]
+        program_name = data["header"]["program_name"]
+        program_version = data["header"]["program_version"]
+
+        os_support_foreground_color = data["header"]["os_support_foreground_color"]
+        os_support_background_color = data["header"]["os_support_background_color"]
+        os_support_message = data["header"]["os_support_message"]
+        supported_operating_systems = data["header"]["supported_operating_systems"]
+
+        menu.add_header(
+            ascii_title_colors=ascii_title_colors,
+            ascii_title=ascii_title,
+            title_bar_color=title_bar_colors,
+            title_bar=title_bar,
+            program_name_color=program_name_color,
+            program_version_color=program_version_color,
+            program_name=program_name,
+            program_version=program_version,
+            os_support_foreground_color=os_support_foreground_color,
+            os_support_background_color=os_support_background_color,
+            os_support_message=os_support_message,
+            supported_operating_systems_info=supported_operating_systems
+        )
+
+        # assembles the Menu descriptions and options using the json data
+        for key in data["descriptions"]:
+            # grabs the descriptions and options data from the json data
+            description_collection = data["descriptions"][key]
+            option_collection = data["options"][key]
+
+            # gets the current descriptions and options data from the collections, also gets the respective function from the call_functions
+            description_color = description_collection["description_color"]
+            description = description_collection["description"]
+
+            option_number_color = option_collection["option_number_color"]
+            option_number = int(str(key))
+            seperator_color = option_collection["seperator_color"]
+            seperator = option_collection["seperator"]
+            option_color = option_collection["option_color"]
+            option = option_collection["option"]
+            call_function = call_functions[str(key)]
+
+            menu.add_description(
+                description_color=description_color,
+                description=description
+            )
+
+            menu.add_option(
+                menu_option_number_color=option_number_color,
+                menu_option_number=option_number,
+                seperator_color=seperator_color,
+                seperator=seperator,
+                menu_option_color=option_color,
+                menu_option=option,
+                call_function=call_function
+            )
+    
+        # sets the Menu input message for its input field using the json data
+        input_message_color = data["input_field"]["input_message_color"]
+        input_message = data["input_field"]["input_message"]
+
+        menu.set_input_message(
+            input_message_color=input_message_color,
+            input_message=input_message
+        )
+
+        # returns the Menu object
+        return menu
+
+menataur = Menataur()
+
+def test():
+    print("It works!!!")
+    exit()
+
+menu = menataur.menu_from_json(
+    file_path="./main_menu.json", 
+    call_functions={"0": test, "1": test, "2": test, "3": test, "4": test}
+)
+
+menu.display_menu()

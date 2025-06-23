@@ -1,5 +1,5 @@
 # Imports the module
-import menataur_prototype
+import Old_Versions.menataur_prototype as menataur_prototype
 
 # Creates an instance of Minotaur (the menu class)
 menu = menataur_prototype.Menataur()
