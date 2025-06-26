@@ -1,7 +1,6 @@
 # [=== Imports ===] #
 
-# Copyright (c) 2013-2023, Anthony Sottile
-from colorama import Fore, Back
+from colorama import Fore, Back # Copyright (c) 2013-2023, Anthony Sottile
 import json
 
 # [=== Functionality ===] #
@@ -87,8 +86,7 @@ class Menu():
         # special callable function objects placeholder for the option element(s) (one function for each option)
         self.call_functions = {}
 
-        # placeholders for input and input_message - different compared to the others
-        self._input = ""
+        # placeholder for input_message
         self._input_message = "{input_message}{foreground_reset}"
 
     # :: Main Functionality :: #
@@ -101,18 +99,49 @@ class Menu():
     def _configure_input_message(self, message: str):
         self._input_message = message
     
+    # used to validate the users input when the menu is called
+    def validate_user_input(user_input: str, first: int, last: int) -> bool:
+        # checks if the user_input is a number and converts it to an int or float (if it passes, otherwise False is returned)
+        try:
+            user_input = int(user_input)
+            if user_input >= first and user_input <= last:
+                return True
+            else:
+                print(f"{Fore.RED}[!] Error: Invalid menu option.{Fore.RESET}")
+                return False
+        except ValueError:
+            try:
+                user_input = float(user_input)
+                if round(int(user_input), 1) >= first and round(int(user_input), 1) <= last:
+                    return True
+                else:
+                    print(f"{Fore.RED}[!] Error: Invalid menu option.{Fore.RESET}")
+                    return False
+            except ValueError:
+                print(f"{Fore.RED}[!] Error: You must enter a number.{Fore.RESET}")
+                return False
+        except KeyboardInterrupt:
+            print("\n")
+            exit()
+        except Exception as e:
+            print(e)
+            exit()
+            
     # gets the user input using the _input_message and returns the user's input
     def get_user_input(self):
-        if self._input_message != "{input_message}{foreground_reset}":
-            try:
-                return input(self._input_message)
-            except KeyboardInterrupt:
-                print("\n")
-                exit()
-            except Exception as e:
-                print(e)
-        else:
-            print(f"{Fore.RED}[!] Error: Menu input_message needs to be set.{Fore.RESET}")
+        while True:
+            # prompts the user for input using the created _input_message
+            if self._input_message != "{input_message}{foreground_reset}":
+                user_input = input(f"{self._input_message}")
+            else:
+                print(f"{Fore.RED}[!] Error: Menu input_message needs to be set.{Fore.RESET}")
+
+            # checks the user input (True for good, False for bad)
+            valid_input = self.validate_user_input(user_input)
+            if valid_input == False:
+                pass
+            else:
+                return user_input
     
     # displays the menu in its current state
     def display_menu(self):
@@ -217,12 +246,8 @@ class Menu():
     # calls the menu in its current state with its input field (if it has been configured)
     def call_menu(self) -> int:
         print(self._menu)
-        while True:
-            user_input = self.get_user_input()
-            if isinstance(user_input, int) != True:
-                print(f"{Fore.RED}[!] Error: You must enter a number{Fore.RESET}")
-            else:
-                return user_input
+        user_input = self.get_user_input()
+        return user_input
 
 # used to create menu stacks
 class Menu_Stack():
@@ -252,6 +277,8 @@ class Menu_Interface():
 class Menataur():
     def __init__(self):
         pass
+
+    # [=== Builder Functions ===] #
 
     # menu building methods
     def menu_from_params(self, ascii_title_colors: list, ascii_title: str, title_bar_color: str, title_bar: str, program_name_color: str, program_version_color: str, program_name: str, program_version: float, os_support_foreground_color: str, os_support_background_color: str, os_support_message: str, supported_operating_systems: list, description_colors: dict, descriptions: dict, option_number_color: str, seperator_color: str, seperator: str, option_colors: dict, options: dict, call_functions: dict, input_message_color: str, input_message: str):
@@ -399,3 +426,14 @@ class Menataur():
 
         # returns the Menu object
         return menu
+    
+    # creates a new menu stack and returns it
+    def menu_stack() -> Menu_Stack:
+        return Menu_Stack()
+    
+    # creates a new menu interface and returns it
+    def menu_interface() -> Menu_Interface:
+        return Menu_Interface()
+    
+    # [=== Main Functionality ===] #
+
