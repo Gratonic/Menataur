@@ -3,11 +3,11 @@
 ## Module Details
 
 **Module Name:** Menataur (menataur_v1.0.py)  
-**Author:** Gratonic [GitHub](https://github.com/Gratonic)  
-**Contributing Author:** FailurePoint [GitHub](https://github.com/FailurePoint)  
-**Written In:** Python 3.12.3  
-**Dependencies:** colorama, json  
-**Last Modified:** 6/26/2025  
+**Author:** Gratonic (https://github.com/Gratonic)
+**Contributing Author:** FailurePoint (https://github.com/FailurePoint)
+**Written In:** Python 3.12.3 
+**Dependencies:** colorama, json 
+**Last Modified:** 6/26/2025 
 
 ## Overview
 
