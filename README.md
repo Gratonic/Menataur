@@ -1,102 +1,113 @@
-# :: Author Information and Program Details :: #
+# Menataur
 
-Module Name: Menataur (Menataur/menataur.py) | 
-Author: Gratonic (https://github.com/Gratonic) | 
-Contributing Author: FailurePoint (https://github.com/FailurePoint) | 
-Written In: Python 3.10.12 | 
-Dependencie(s): colorama | 
-Last Modified: February 9th, 2025
+## Module Details
 
-# :: Description :: #
+**Module Name:** Menataur (menataur_v1.0.py)  
+**Author:** Gratonic [GitHub](https://github.com/Gratonic)  
+**Contributing Author:** FailurePoint [GitHub](https://github.com/FailurePoint)  
+**Written In:** Python 3.12.3  
+**Dependencies:** colorama, json  
+**Last Modified:** 6/26/2025  
 
-This Module is used to build a menu interface with an ASCII Art Title.
-The add_header() function is used to build the header portion of a menu (ASCII Art Title, OS Support Information, etc.). The add_body() function is used to
-add a menu option to the menu. The add_paragraph() function is used to add a description to the menu. The add_footer()
-function is used to add a sentence/description at a desired location on the menu (likely the bottom) with padding. The color
-validation function are used to validate the colors passed to the function by checking the given color or colors against a 
-dictionary of the colors supported by the program and then set the color to the chosen colors actual value. When add_header(),
-add_body(), add_paragraph(), and_footer() are called, the parameters are used to format place holder strings which are then added
-to the _placeholder format string (the actual menu) with the _include() function, which is responsible for tacking the pieces
-of the menu onto the menu. Think of this program like a lego project, each piece of the menu is like a lego structure and the
-pieces of that lego structure are the configuration settings for that lego structure, and think of the _include() function as the
-function that attaches that lego structure to the lego project. Alternatively, you can think of it sort of like a webpage written
-in just HTML and CSS.
+## Overview
 
-# :: OS Support :: #
+Menataur is a Python module designed to create colorful and interactive menus in the terminal. It allows users to build menus from parameters or JSON files, providing a flexible way to present options and gather user input.
 
-All Operating Systems
+## Features
 
-# :: Installation :: #
+- **Colorful Menus:** Customize the appearance of menus with various foreground and background colors.
+- **Dynamic Input Handling:** Validate user input to ensure it meets specified criteria.
+- **Menu Stacks:** Create and manage multiple menus easily.
+- **JSON Support:** Load menu configurations from JSON files for easy customization.
 
-pip3 install menataur
+## Installation
 
-# :: Example Usage :: #
+To install the required dependencies, run:
 
-```python
-import menataur
-menu = menataur.Menataur()
-menu.add_header(
-    ascii_art_title=ascii_art_title,
-    small_title=small_title,
-    title_colors=title_colors,
-    title_bar=title_bar,
-    program_version_color=program_version_color,
-    program_version_num=program_version_num,
-    os_support_message_color=os_support_message_color,
-    os_support_highlight_color=os_support_highlight_color,
-    os_support_color=os_support_color,
-    os_support_info=os_support_info
-)
-menu.add_paragraph(text_color="grey", text="Have some fun at a party")
-menu.add_body(accent_color="magenta", menu_option_number=1, menu_option_color="light_cyan", menu_option="Party")
-menu.add_paragraph(text_color="grey", text="Drink way too much")
-menu.add_body(accent_color="magenta", menu_option_number=2, menu_option_color="light_cyan", menu_option="Get Drunk")
-menu.add_paragraph(text_color="grey", text="Go to bed and sleep")
-menu.add_body(accent_color="magenta", menu_option_number=3, menu_option_color="light_cyan", menu_option="Sleep")
-menu.add_paragraph(text_color="grey", text="All three")
-menu.add_body(accent_color="magenta", menu_option_number=4, menu_option_color="light_cyan", menu_option="The Works")
-menu.add_footer(text_color="light_yellow", text="Thank you for using Minotaur!")
-menu.execute()
+```bash
+
+pip install -r requirements.txt
+
 ```
 
-NOTE: multipule menu obects can be created and used at once, ie: `main_menu = menataur.Menataur()`, `pageone = menataur.Menataur()`
-, `pagetwo = menataur.Menataur()`
+```python
 
+from menataur_v1.0 import Menataur
 
-# Breakdown
+# Create an instance of Menataur
+menataur = Menataur()
 
-## Imports the module
-import menataur
+# Define your menu parameters
+ascii_title_colors = ["blue", "light_blue"]
+ascii_title = "Welcome to Menataur"
+title_bar_color = "cyan"
+title_bar = "===================="
+program_name = "Menataur"
+program_version = 1.0
+os_support_message = "Supports Windows, macOS, Linux"
+supported_os = ["Windows", "macOS", "Linux"]
+description_colors = {0: "light_green"}
+descriptions = {0: "Choose an option from the menu below:"}
+option_colors = {0: "light_yellow"}
+options = {0: "Exit"}
+call_functions = {0: exit} # NOTE: exit is a function object 
+input_message_color = "white"
+input_message = "Please enter your choice:"
 
-## Creates an instance of Menataur (the menu class)
-menu = menataur.Menataur()
-
-## Add the header to the menu
-menu.add_header(
-    ascii_art_title=ascii_art_title,
-    small_title=small_title,
-    title_colors=title_colors,
-    title_bar=title_bar,
-    program_version_color=program_version_color,
-    program_version_num=program_version_num,
-    os_support_message_color=os_support_message_color,
-    os_support_highlight_color=os_support_highlight_color,
-    os_support_color=os_support_color,
-    os_support_info=os_support_info
+# Build the menu from params
+menu = menataur.menu_from_params(
+    ascii_title_colors, ascii_title, title_bar_color, title_bar,
+    "green", "light_green", program_name, program_version,
+    "yellow", "black", os_support_message, supported_os,
+    description_colors, descriptions, "light_red", ":", option_colors, options, call_functions,
+    input_message_color, input_message
 )
 
-## Add body elements (menu options)
-menu.add_paragraph(text_color="grey", text="Have some fun at a party")
-menu.add_body(accent_color="magenta", menu_option_number=1, menu_option_color="light_cyan", menu_option="Party")
-menu.add_paragraph(text_color="grey", text="Drink way too much")
-menu.add_body(accent_color="magenta", menu_option_number=2, menu_option_color="light_cyan", menu_option="Get Drunk")
-menu.add_paragraph(text_color="grey", text="Go to bed and sleep")
-menu.add_body(accent_color="magenta", menu_option_number=3, menu_option_color="light_cyan", menu_option="Sleep")
-menu.add_paragraph(text_color="grey", text="All three")
-menu.add_body(accent_color="magenta", menu_option_number=4, menu_option_color="light_cyan", menu_option="The Works")
+# Build the menu from json
+menu = menataur.menu_from_json("Example_Menus/dessert.json", call_functions) # call_functions is a dict, exactly like the one above
 
-## Add a footer (thank you message)
-menu.add_footer(text_color="light_yellow", text="Thank you for using Menataur!")
+# Call the menu
+user_choice = menu.call_menu()
 
-## Completes and calls the menu
-menu.execute()
+```
+
+# Example JSON Structure
+
+```json
+{
+    "header": {
+        "ascii_title_colors": ["blue", "light_blue"],
+        "ascii_title": "menataur_ascii_title.txt",
+        "title_bar_color": "cyan",
+        "title_bar": "====================",
+        "program_name_color": "green",
+        "program_version_color": "light_green",
+        "program_name": "Dessert Menu",
+        "program_version": 1.0,
+        "os_support_foreground_color": "yellow",
+        "os_support_background_color": "black",
+        "os_support_message": "Supports Windows, macOS, Linux",
+        "supported_operating_systems": ["Windows", "macOS", "Linux"]
+    },
+    "descriptions": {
+        "0": {
+            "description_color": "light_green",
+            "description": "Choose your favorite dessert:"
+        }
+    },
+    "options": {
+        "0": {
+            "option_number_color": "light_yellow",
+            "seperator_color": "light_red",
+            "seperator": ":",
+            "option_color": "light_yellow",
+            "option": "Chocolate Cake"
+        }
+    },
+    "input_field": {
+        "input_message_color": "white",
+        "input_message": "Please enter your choice:"
+    }
+}
+
+```

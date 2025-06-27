@@ -1,3 +1,14 @@
+# [=== Module Details ===] #
+
+"""
+Module Name: Menataur (menataur_v1.0.py)
+Author: Gratonic (https://github.com/Gratonic)
+Contributing Author: FailurePoint (https://github.com/FailurePoint)
+Written In: Python 3.12.3 | 
+Dependencie(s): colorama, json
+Last Modified: 6/26/2025
+"""
+
 # [=== Imports ===] #
 
 from colorama import Fore, Back # Copyright (c) 2013-2023, Anthony Sottile
@@ -276,7 +287,8 @@ class Menu_Interface():
 
 class Menataur():
     def __init__(self):
-        pass
+        # used to set the Menu_Interface to use for the menu call function
+        self._menu_interface = None
 
     # [=== Builder Functions ===] #
 
@@ -437,3 +449,13 @@ class Menataur():
     
     # [=== Main Functionality ===] #
 
+    # sets the menu_interface for Menataur to use with the call_menu function
+    def use_menu_interface(self, menu_interface: Menu_Interface) -> None:
+        self._menu_interface = menu_interface
+
+    # used to call a menu from the set _menu_interface - great to use as a call_function for a Menu option
+    def call_menu(self, menu_stack_name: str, menu_name: str) -> int:
+        menu = self._menu_interface[menu_stack_name][menu_name]
+        # uses the Menu's built in call_menu function to call the Menu and retrieve the user's input
+        user_input = menu.call_menu()
+        return user_input
