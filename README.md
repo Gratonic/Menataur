@@ -3,8 +3,8 @@
 ## Module Details
 
 **Module Name:** Menataur (menataur_v1.0.py)  
-**Author:** Gratonic [(https://github.com/Gratonic)
-**Contributing Author:** FailurePoint [(https://github.com/FailurePoint)
+**Author:** Gratonic 
+**Contributing Author:** FailurePoint
 **Written In:** Python 3.12.3 
 **Dependencies:** colorama, json 
 **Last Modified:** 6/26/2025 
