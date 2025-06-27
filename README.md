@@ -2,12 +2,12 @@
 
 ## Module Details
 
-- **Module Name:** Menataur (menataur_v1.0.py)  
+- **Module Name:** Menataur (Menataur/menataur_v1.2.py)  
 - **Author:** Gratonic (https://github.com/Gratonic)
 - **Contributing Author:** FailurePoint (https://github.com/FailurePoint)
 - **Written In:** Python 3.12.3 
 - **Dependencies:** colorama, json 
-- **Last Modified:** 6/26/2025 
+- **Last Modified:** 6/26/2025
 
 ## Overview
 
@@ -26,7 +26,8 @@ To install the required dependencies, run:
 
 ```bash
 
-pip install -r requirements.txt
+pip3 install -r requirements.txt
+pip3 install menataur
 
 ```
 
