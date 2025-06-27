@@ -1,7 +1,7 @@
 # [=== Module Details ===] #
 
 """
-Module Name: Menataur (menataur_v1.0.py)
+Module Name: Menataur (menataur_v1.2.0.py)
 Author: Gratonic (https://github.com/Gratonic)
 Contributing Author: FailurePoint (https://github.com/FailurePoint)
 Written In: Python 3.12.3 | 
