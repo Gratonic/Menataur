@@ -23,6 +23,7 @@ jobs:
           # Install build tools
           python -m pip install build
           # Build the package
+          cd ./
           python -m build
 
       - name: Upload distributions
