@@ -1,0 +1,40 @@
+{
+    "header": {
+        "ascii_title_colors": ["red", "white", "blue"],
+        "ascii_title": "menataur_ascii_title.txt",
+
+        "title_bar_color": "yellow",
+        "title_bar": "________________________________________________/",
+
+        "program_name_color": "magenta",
+        "program_version_color": "cyan",
+        "program_name": "Menataur",
+        "program_version": 1.0,
+        
+        "os_support_foreground_color": "green",
+        "os_support_background_color": "white",
+        "os_support_message": "This Program Supports:",
+        "supported_operating_systems": ["Windows", "MacOS", "Linux"]
+    },
+
+    "descriptions": {
+        "0": {"description_color": "blue", "description": "exits the program"},
+        "1": {"description_color": "blue", "description": "eat an banana"},
+        "2": {"description_color": "blue", "description": "eat a mango"},
+        "3": {"description_color": "blue", "description": "eat a pinapple"},
+        "4": {"description_color": "blue", "description": "returns to the previous menu"}
+    },
+
+    "options": {
+        "0": {"menu_option_number_color": "yellow", "seperator_color": "magenta", "seperator": ")", "menu_option_color": "green", "menu_option": "Exit"},
+        "1": {"menu_option_number_color": "yellow", "seperator_color": "magenta", "seperator": ")", "menu_option_color": "green", "menu_option": "Banana"},
+        "2": {"menu_option_number_color": "yellow", "seperator_color": "magenta", "seperator": ")", "menu_option_color": "green", "menu_option": "Mango"},
+        "3": {"menu_option_number_color": "yellow", "seperator_color": "magenta", "seperator": ")", "menu_option_color": "green", "menu_option": "Pinapple"},
+        "4": {"menu_option_number_color": "yellow", "seperator_color": "magenta", "seperator": ")", "menu_option_color": "green", "menu_option": "Previous Menu"}
+    },
+
+    "input_field": {
+        "input_message_color": "cyan",
+        "input_message": "Please Choose An Option From The Menu [Ex: 1]: "
+    }
+}
