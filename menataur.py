@@ -62,10 +62,10 @@ menu.add_banner(banner)
 menu.add_options(options)
 menu.add_prompt(prompt)
 
-menu.run_menu()
+menu.run()
 
 # you can only simply display it (excludes the input prompt)
-menu.display_menu()
+menu.display()
 """
 
 # [=== Imports ===] #
@@ -488,10 +488,10 @@ class Menu:
         # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
         self._prompt = partial(input_prompt, prompt_message)
 
-    def display_menu(self) -> None:
+    def display(self) -> None:
         print(self._menu)
 
-    def run_menu(self) -> int:
+    def run(self) -> int:
         print(self._menu)
 
         while True:
