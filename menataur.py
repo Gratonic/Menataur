@@ -421,8 +421,33 @@ class Menu:
         # this variable will a hold a callable address for the input_prompt() function loaded with its parameter already
         self._prompt = None
 
+        # used to determine wether or not this is the main menu
+        self.main_menu = False
         # used to store the option numbers for basic input validation in the run_menu method
         self._option_numbers = set()
+        # used to store the Option to Menu mappings - required if the user want's to use this Menu in a Menataur
+        self._datamap = dict()
+
+    # --- getter/setter properties --- #
+
+    @property
+    def datamap(self):
+        return self._datamap
+
+    @datamap.setter
+    def datamap(self, map: dict):
+        # add the exit and previous menu (if applicable) options 
+        map[0] = "exit"
+
+        if self.main_menu != True:
+            map[max(self._option_numbers)] = "placeholder"
+
+        # ensure the user has provided map keys that match the option numbers and store the map if so
+        if map.keys() != self._datamap:
+            print(f"{Fore.RED}[!] Error: The {Fore.YELLOW}map keys{Fore.RED} do not match the {Fore.YELLOW}option numbers{Fore.RED}.{Fore.RESET}")
+            exit(1)
+
+        self._datamap = map
 
     # --- methods ---  #
 
@@ -469,8 +494,9 @@ class Menu:
                 reset=Fore.RESET
             ))
 
-            # add the previous_menu_option with its respective option number to the options dictionary to keep a record of it
-            options.options[previous_menu_option_number] = previous_menu_option
+            if self.main_menu != True:
+                # add the previous_menu_option with its respective option number to the options dictionary to keep a record of it
+                options.options[previous_menu_option_number] = previous_menu_option
 
         # add the exit_option with it's respective option number to the options dictionary to keep a record of it
         options.options[0] = exit_option
