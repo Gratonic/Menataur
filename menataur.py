@@ -421,7 +421,7 @@ class Menu:
         # this variable will a hold a callable address for the input_prompt() function loaded with its parameter already
         self._prompt = None
 
-        # used to determine wether or not this is the main menu
+        # used to determine wether or not this is a/the main menu
         self.main_menu = False
         # used to store the option numbers for basic input validation in the run_menu method
         self._option_numbers = set()
