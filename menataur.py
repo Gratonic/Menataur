@@ -500,12 +500,14 @@ class Menu:
         if self.main_menu != True:
             map[max(self._option_numbers)] = "previous_menu"
 
-        # ensure the user has provided map keys that match the option numbers and store the map if so
-        if map.keys() != self._datamap:
-            print(f"{Fore.RED}[!] Error: The {Fore.YELLOW}map keys{Fore.RED} do not match the {Fore.YELLOW}option numbers{Fore.RED}.{Fore.RESET}")
-            exit(1)
-
         self._datamap = map
+
+        # ensure the user has provided map keys that match the option numbers and store the map if so
+        if map.keys() != self._datamap.keys():
+            print(f"{Fore.RED}[!] Error: The {Fore.YELLOW}map keys{Fore.RED} do not match the {Fore.YELLOW}option numbers{Fore.RED}.{Fore.RESET}")
+            print(map.keys())
+            print(self._datamap.keys())
+            exit(1)
 
     # --- methods ---  #
 
