@@ -12,8 +12,13 @@ Last Modified: Septemeber 26, 2026
 This program was designed to make writing command-line menu interfaces easier. 
 It splits each menu into blocks represented by classes. These block classes are combined to create 
 a Menu instance, which can then be combined with other Menu instances within the Menataur class.
-The Menataur class organizes the menu components and uses a custom navigation algorithm to allow 
+The Menataur class organizes the menu components and uses a navigation algorithm to allow 
 users to move between them.
+
+note: 
+When reading the menu navigation algorithm code in this program (split between Menu and Menataur), think about a Binary Tree
+and it will begin to make a lot more sense. I believe this is the simplest way to make sense
+of the navigation algorithm.
 
 # :: Example Usage :: #
 
@@ -52,11 +57,14 @@ options.add_option("Help", 3, "Help")
 # create the prompt
 prompt = Prompt()
 
-prompt.prompt_message = "Select an option: "
 prompt.prompt_message_color = "light_magenta"
+prompt.prompt_message = "Select an option: "
 
 # create and run the menu
 menu = Menu()
+
+menu.name = "main"
+menu.main_menu = True
 
 menu.add_banner(banner)
 menu.add_options(options)
@@ -75,6 +83,11 @@ from functools import partial
 import subprocess
 import random
 import sys
+
+# [=== Global Variables ===]
+
+# used to ensure the user does not give two or more Menu's the same name
+_used_menu_name: list[str] = list()
 
 # [=== Functions ===] #
 
@@ -144,7 +157,7 @@ note:
 the reason for the complex approach in this function is to avoid large amounts of color repeats, 
 which was a major issue with a previous one-liner approach
 """
-def paint_text(text: str, colors: list) -> str | None:
+def paint_text(text: str, colors: list) -> str:
     # avoids waisting compute time with an algorithm if there is only one color provided
     if len(colors) == 1:
         return f"{validate_foreground_color(colors[0])}{text}{Fore.RESET}"
@@ -272,7 +285,7 @@ class Banner:
         self.operating_system_support_message = "This Program Supports: Linux, MacOS, and Windows"
 
         # element colors
-        self._title_colors = list()
+        self._title_colors: list[str] = list()
         self._title_bar_color = str()
         self._program_name_color = str()
         self._program_version_number_color = str()
@@ -324,7 +337,7 @@ class Banner:
 class Options:
     def __init__(self):
         # elements #
-        self.options = dict()
+        self.options: dict[int, str] = dict()
         self.previous_menu_option = True
 
         # element colors
@@ -414,21 +427,61 @@ class Prompt:
 class Menu:
     def __init__(self):
         # note: these strings are formated to construct menu elements (in the technical sense they are the elements)
-        self._menu = ""
+        self._menu = str()
         self._banner = "{title}\n{title_bar_color}{title_bar}\n{program_name_color}{program_name}{program_version_number_color}v{program_version_number}\n{operating_system_support_message_color}{operating_system_support_message}{reset}"
         self._option = "{option}{reset}"
 
         # this variable will a hold a callable address for the input_prompt() function loaded with its parameter already
         self._prompt = None
 
+        # used to make it easier to sort through the final Menataur (menu interface) data
+        self._name = str()
         # used to determine wether or not this is a/the main menu
         self.main_menu = False
+        # used to determine wether or not this is the final menu in a menu path
+        self._final_menu = False
         # used to store the option numbers for basic input validation in the run_menu method
-        self._option_numbers = set()
+        self._option_numbers: set[int] = set()
         # used to store the Option to Menu mappings - required if the user want's to use this Menu in a Menataur
-        self._datamap = dict()
+        self._datamap: dict[int, Menu | str] = dict()
 
     # --- getter/setter properties --- #
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, menu_name: str):
+        if menu_name in _used_menu_name:
+            print(f"{Fore.RED}[!] Error: Every Menu must be assigned a unique {Fore.YELLOW}name{Fore.RED}.{Fore.RESET}")
+            exit(1)
+        
+        _used_menu_name.append(menu_name)
+
+        self._name = menu_name
+
+    @property
+    def final_menu(self):
+        return self._final_menu
+
+    @final_menu.setter
+    def final_menu(self, value: bool):
+        if value == True:
+            # used to create a special data map for the final menu
+            _final_menu_datamap: dict[int, str] = dict()
+            # used to know when to stop looping; note: 1 is not subtracted for previous menu because of the way the range() function works
+            _last_option = max(self._option_numbers)
+
+            _final_menu_datamap[0] = "exit"
+
+            for opt in range(1, _last_option):
+                _final_menu_datamap[opt] = "final_menu"
+
+            _final_menu_datamap[_last_option] = "previous_menu"
+        
+        # set the _final_menu tracker variable to the user given bool (True or False)
+        self._final_menu = value
 
     @property
     def datamap(self):
@@ -439,8 +492,13 @@ class Menu:
         # add the exit and previous menu (if applicable) options 
         map[0] = "exit"
 
+        # ensure this is not a final menu because final Menus do not need a user configured datamap
+        if self.final_menu == True:
+            print(f"{Fore.RED}[!] Error: This is a {Fore.YELLOW}Final Menu{Fore.RED}, it should not have a datamap.{Fore.RESET}")
+            exit(1)
+
         if self.main_menu != True:
-            map[max(self._option_numbers)] = "placeholder"
+            map[max(self._option_numbers)] = "previous_menu"
 
         # ensure the user has provided map keys that match the option numbers and store the map if so
         if map.keys() != self._datamap:
@@ -520,6 +578,10 @@ class Menu:
     def run(self) -> int:
         print(self._menu)
 
+        if self.name == str():
+            print(f"{Fore.RED}[!] Error: Every Menu must be assigned a unique{Fore.YELLOW}name{Fore.RED}.")
+            exit(1)
+
         while True:
             user_choice = self._prompt()
 
@@ -541,4 +603,68 @@ class Menu:
                 print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
 
 class Menataur:
-    pass
+    def __init__(self):
+        # stores the starting position of the Menataur (menu interface)
+        self._start_menu = None
+
+    @property
+    def start_menu(self):
+        return self._start_menu
+
+    @start_menu.setter
+    def start_menu(self, menu: Menu):
+        if menu.main_menu == True:
+            self._start_menu = menu
+        else:
+            print(f"{Fore.RED}[!] Error: The {Fore.YELLOW}start_menu{Fore.RED} must be a {Fore.YELLOW}main_menu{Fore.RED}.{Fore.RESET}")
+            print(f"{Fore.BLUE}[?] Help: If you would like to use this {Fore.YELLOW}menu{Fore.BLUE} as your start_menu, set {Fore.YELLOW}main_menu=True{Fore.BLUE}.{Fore.RESET}")
+            exit(1)
+
+    def run(self) -> list[int]:
+        # keeps track of the current menu (changed at the end of each loop depending on the user choice)
+        _current_menu = self._start_menu
+        # keeps track of the previous menu (becomes _current_menu after the _current_menu runs in each loop)
+        _previous_menu = None
+
+        """
+        note: 
+        This data format was chosen because it allows for easy access to the data
+        while still maintaing the orignal order the data was added. If just was used it would make
+        it hard for the user to sort through the data and if just a dictionary was used the .keys() and 
+        .values() sets would not retain the original order in which the data was addded. 
+        """
+        _user_choices: list[dict[str, int]] = list()
+
+        if self._start_menu == None:
+            print(f"{Fore.RED}[!] Error: You must set a {Fore.YELLOW}start_menu{Fore.RED}.{Fore.RESET}")
+
+        # note: think of a Binary Tree when thiking about how the menu navigation works
+        while _current_menu != "final_menu":
+            # fetch the current Menu's name
+            _current_menu_name = _current_menu.name
+            # fetch the current Menu's datamap
+            _current_menu_datamap = _current_menu.datamap
+
+            # run the current menu and store the returned option number
+            _menu_output = _current_menu.run()
+
+            # stores the _current_menu as the _previous_menu because it will be in the next Menu
+            _previous_menu = _current_menu_name
+
+            # use the _menu_output to determine what to do next; note: the datamap may provide another Menu or a Menu code
+            _current_menu = _current_menu_datamap[_menu_output]
+
+            match _current_menu:
+                case "final_menu":
+                    _user_choice_map = {_current_menu_name: _menu_output}
+                    _user_choices.append(_user_choice_map)
+
+                    return _user_choices
+                case "previous_menu":
+                    # the _current_menu was already stored as the _previous_menu, so nothing needs to be done
+                    continue
+                case _:
+                    _user_choice_map = {_current_menu_name: _menu_output}
+                    _user_choices.append(_user_choice_map)
+
+                    continue
