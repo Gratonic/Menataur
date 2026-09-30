@@ -35,6 +35,3 @@ test.py
 
 # Ignore the venv dir
 *menataur_venv
-
-# Other
-*DS_Store*
