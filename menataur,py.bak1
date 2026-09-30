@@ -430,8 +430,8 @@ class Menu:
         self._banner = "{title}\n{title_bar_color}{title_bar}\n{program_name_color}{program_name}{program_version_number_color}v{program_version_number}\n{operating_system_support_message_color}{operating_system_support_message}\n{reset}"
         self._option = "{option}{reset}"
 
-        # this variable will a hold a callable address for the input_prompt() function loaded with its parameter already
-        self._prompt = None
+        # this list will a hold x callable addresses for x input_prompt() functions loaded with thier prompt_message already (like a list of loaded guns ready to fire)
+        self._prompts: list[Prompt] = list()
 
         # used to make it easier to sort through the final Menataur (menu interface) data
         self._name = str()
@@ -564,20 +564,25 @@ class Menu:
         # store the option numbers to reference for basic input validation in the run_method function
         self._option_numbers = options.options.keys()
 
-    def add_prompt(self, prompt: Prompt) -> None:
-        if prompt.prompt_colored == True:
-            prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{Fore.RESET}"
-        else:
-            # note: the Fore.RESET is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
-            prompt_message = f"{prompt.prompt_message}{Fore.RESET}"
+    def add_prompts(self, prompts: list[Prompt]) -> None:
+        for prompt in prompts:
+            if prompt.prompt_colored == True:
+                prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{Fore.RESET}"
+            else:
+                # note: the Fore.RESET is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+                prompt_message = f"{prompt.prompt_message}{Fore.RESET}"
 
-        # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
-        self._prompt = partial(input_prompt, prompt_message)
+            # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
+            prompt = partial(input_prompt, prompt_message)
+
+            # add the prompt function address to the list of prompts (function addresses); note: the first to be added should be and will be the option selection prompt
+            self._prompts.append(prompt)
 
     def display(self) -> None:
         print(self._menu)
 
-    def run(self) -> int:
+    # todo: handle all the prompts (remeber check if it is the first because it will have validation)
+    def run(self) -> list:
         print(self._menu)
 
         if self.name == str():
@@ -585,24 +590,23 @@ class Menu:
             exit(1)
 
         while True:
-            user_choice = self._prompt()
+            for prompt in self._prompts:
+                user_choice = prompt()
 
-            try:
-                user_choice = int(user_choice)
+                try:
+                    user_choice = int(user_choice)
 
-                if user_choice == 0:
-                    exit(0)
+                    if user_choice == 0 and self._prompts[0] == prompt:
+                        exit(0)
 
-                if user_choice in self._option_numbers:
-                    clear_terminal()
-
-                    return user_choice
-                else:
+                    if user_choice in self._option_numbers and self._prompts[0] == prompt:
+                        pass
+                    else:
+                        print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
+                except ValueError:
                     print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
-            except ValueError:
-                print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
-            except Exception as e:
-                print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
+                except Exception as e:
+                    print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
 
 class Menataur:
     def __init__(self):

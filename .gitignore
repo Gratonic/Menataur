@@ -35,3 +35,7 @@ test.py
 
 # Ignore the venv dir
 *menataur_venv
+
+# Temporary - backup files because I am working on more features
+menataur.py.bak
+menataur.py.bak1
