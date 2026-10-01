@@ -622,7 +622,7 @@ class Menataur:
             print(f"{Fore.BLUE}[?] Help: If you would like to use this {Fore.YELLOW}menu{Fore.BLUE} as your start_menu, set {Fore.YELLOW}main_menu=True{Fore.BLUE}.{Fore.RESET}")
             exit(1)
 
-    def run(self) -> list[int]:
+    def run(self) -> list[dict[str, int]]:
         # keeps track of the current menu (changed at the end of each loop depending on the user choice)
         _current_menu = self._start_menu
         # keeps track of the previous menu (becomes _current_menu after the _current_menu runs in each loop)
@@ -641,7 +641,7 @@ class Menataur:
             print(f"{Fore.RED}[!] Error: You must set a {Fore.YELLOW}start_menu{Fore.RED}.{Fore.RESET}")
 
         # note: think of a Binary Tree when thiking about how the menu navigation works
-        while _current_menu != "final_menu":
+        while True:
             # fetch the current Menu's name
             _current_menu_name = _current_menu.name
             
@@ -658,24 +658,43 @@ class Menataur:
                 case "final_menu":
                     clear_terminal()
 
-                    _user_choice_map = {_current_menu_name: _menu_output}
-                    _user_choices.append(_user_choice_map)
+                    # if the user did choose to navigate to the _previous_menu...
+                    if _menu_output != max(_current_menu.datamap.keys()):
+                        # add the user's choice to the _user_choices_map
+                        _user_choice_map = {_current_menu_name: _menu_output}
+
+                        _user_choices.append(_user_choice_map)
+                    else:
+                        # removes the _previous_menu's _user_choice_map entry (can not be done with just .pop(-1), cough - thanks to MacOS memory leaks)
+                        for choice in _user_choices:
+                            if _previous_menu.name in choice.keys():
+                                _user_choices.remove(choice)
+                            else:
+                                continue
 
                     return _user_choices
-                case "previous_menu":
-                    clear_terminal()
-
-                    # the _current_menu was already stored as the _previous_menu, so nothing needs to be done
-                    continue
                 case _:
                     clear_terminal()
 
                     # set the previous_menu for the _next Menu's datamap
                     _next.datamap[max(_next.datamap.keys())] = _current_menu
 
-                    # add the user's choice to the _user_choices_map
-                    _user_choice_map = {_current_menu_name: _menu_output}
-                    _user_choices.append(_user_choice_map)
+                    # if the user did choose to navigate to the _previous_menu...
+                    if _menu_output != max(_current_menu.datamap.keys()):
+                        # add the user's choice to the _user_choices_map
+                        _user_choice_map = {_current_menu_name: _menu_output}
+
+                        _user_choices.append(_user_choice_map)
+                    else:
+                        # removes the _previous_menu's _user_choice_map entry (can not be done with just .pop(-1), cough - thanks to MacOS memory leaks)
+                        for choice in _user_choices:
+                            if _previous_menu.name in choice.keys():
+                                _user_choices.remove(choice)
+                            else:
+                                continue
+
+                    # store this menu as the _previous_menu for a record in case the user wants to go back to this Menu
+                    _previous_menu = _current_menu
 
                     # set the _current_menu to the _next Menu so the _next Menu is called in the next loop
                     _current_menu = _next
