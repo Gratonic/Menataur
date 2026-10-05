@@ -490,16 +490,16 @@ class Menu:
 
     @datamap.setter
     def datamap(self, map: dict):
+        # add the exit and previous menu (if applicable) options 
+        map[0] = "exit"
+
         # ensure this is not a final menu because final Menus do not need a user configured datamap
         if self.final_menu == True:
             print(f"{Fore.RED}[!] Error: This is a {Fore.YELLOW}Final Menu{Fore.RED}, it should not have a datamap.{Fore.RESET}")
             exit(1)
 
-        # add the exit and previous menu (if applicable) options 
-        map[0] = "exit"
-
         if self.main_menu != True:
-            map[(max(self._option_numbers)) + 1] = "previous_menu"
+            map[max(self._option_numbers)] = "previous_menu"
 
         self._datamap = map
 
@@ -594,8 +594,7 @@ class Menu:
                     exit(0)
 
                 if user_choice in self._option_numbers:
-                    # clear_terminal()
-                    print(self.datamap)
+                    clear_terminal()
 
                     return user_choice
                 else:
@@ -638,7 +637,7 @@ class Menataur:
             # next menu is the problem resulting in the overpop of user choices
             match next_menu:
                 case "final_menu":
-                    # clear_terminal()
+                    clear_terminal()
 
                     if next_menu == previous_menu:
                         user_choices.pop()
@@ -650,12 +649,11 @@ class Menataur:
 
                     return user_choices
                 case _:
-                    if next_menu.main_menu != True:
-                        next_menu.datamap[max(next_menu.datamap.keys())] = current_menu
+                    next_menu.datamap[max(next_menu.datamap.keys())] = current_menu
 
                     if next_menu == previous_menu:
                         user_choices.pop()
-                        
+
                         continue
                     else:
                         user_choice_map = {current_menu.name: menu_output}

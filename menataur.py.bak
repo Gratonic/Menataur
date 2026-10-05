@@ -490,16 +490,16 @@ class Menu:
 
     @datamap.setter
     def datamap(self, map: dict):
+        # add the exit and previous menu (if applicable) options 
+        map[0] = "exit"
+
         # ensure this is not a final menu because final Menus do not need a user configured datamap
         if self.final_menu == True:
             print(f"{Fore.RED}[!] Error: This is a {Fore.YELLOW}Final Menu{Fore.RED}, it should not have a datamap.{Fore.RESET}")
             exit(1)
 
-        # add the exit and previous menu (if applicable) options 
-        map[0] = "exit"
-
         if self.main_menu != True:
-            map[(max(self._option_numbers)) + 1] = "previous_menu"
+            map[max(self._option_numbers)] = "previous_menu"
 
         self._datamap = map
 
@@ -594,8 +594,7 @@ class Menu:
                     exit(0)
 
                 if user_choice in self._option_numbers:
-                    # clear_terminal()
-                    print(self.datamap)
+                    clear_terminal()
 
                     return user_choice
                 else:
@@ -624,43 +623,79 @@ class Menataur:
             exit(1)
 
     def run(self) -> list[dict[str, int]]:
-        current_menu: Menu = self._start_menu
-        previous_menu: Menu = Menu()
-        user_choices: list[dict[str, int]] = list()
+        # keeps track of the current menu (changed at the end of each loop depending on the user choice)
+        _current_menu = self._start_menu
+        # keeps track of the previous menu (becomes _current_menu after the _current_menu runs in each loop)
+        _previous_menu = None
+
+        """
+        note: 
+        This data format was chosen because it allows for easy access to the data
+        while still maintaing the orignal order the data was added. If just was used it would make
+        it hard for the user to sort through the data.
+        """
+        _user_choices: list[dict[str, int]] = list()
 
         if self._start_menu == None:
             print(f"{Fore.RED}[!] Error: You must set a {Fore.YELLOW}start_menu{Fore.RED}.{Fore.RESET}")
 
+        # note: think of a Binary Tree when thiking about how the menu navigation works
         while True:
-            menu_output = current_menu.run()
-            next_menu = current_menu.datamap[menu_output]
+            # fetch the current Menu's name
+            _current_menu_name = _current_menu.name
+            
+            # fetch the current Menu's datamap
+            _current_menu_datamap = _current_menu.datamap
 
-            # next menu is the problem resulting in the overpop of user choices
-            match next_menu:
+            # run the current menu and store the returned option number
+            _menu_output = _current_menu.run()
+
+            # use the _menu_output to determine what to do next; note: the datamap may provide another Menu or a Menu code
+            _next = _current_menu_datamap[_menu_output]
+
+            match _next:
                 case "final_menu":
-                    # clear_terminal()
+                    clear_terminal()
 
-                    if next_menu == previous_menu:
-                        user_choices.pop()
-                        
-                        continue
+                    # if the user did choose to navigate to the _previous_menu...
+                    if _menu_output != max(_current_menu.datamap.keys()):
+                        # add the user's choice to the _user_choices_map
+                        _user_choice_map = {_current_menu_name: _menu_output}
+
+                        _user_choices.append(_user_choice_map)
                     else:
-                        user_choice_map = {current_menu.name: menu_output}
-                        user_choices.append(user_choice_map)
+                        # removes the _previous_menu's _user_choice_map entry (can not be done with just .pop(-1), cough - thanks to MacOS memory leaks)
+                        for choice in _user_choices:
+                            if _previous_menu.name in choice.keys():
+                                _user_choices.remove(choice)
+                            else:
+                                continue
 
-                    return user_choices
+                    return _user_choices
                 case _:
-                    if next_menu.main_menu != True:
-                        next_menu.datamap[max(next_menu.datamap.keys())] = current_menu
+                    clear_terminal()
 
-                    if next_menu == previous_menu:
-                        user_choices.pop()
-                        
-                        continue
+                    # set the previous_menu for the _next Menu's datamap
+                    _next.datamap[max(_next.datamap.keys())] = _current_menu
+
+                    # if the user did choose to navigate to the _previous_menu...
+                    if _menu_output != max(_current_menu.datamap.keys()):
+                        # add the user's choice to the _user_choices_map
+                        _user_choice_map = {_current_menu_name: _menu_output}
+
+                        _user_choices.append(_user_choice_map)
                     else:
-                        user_choice_map = {current_menu.name: menu_output}
-                        user_choices.append(user_choice_map)
+                        # removes the _previous_menu's _user_choice_map entry (can not be done with just .pop(-1), cough - thanks to MacOS memory leaks)
+                        for choice in _user_choices:
+                            if _previous_menu.name in choice.keys():
+                                _user_choices.remove(choice)
+                            else:
+                                continue
 
-                    current_menu = next_menu
+                    # store this menu as the _previous_menu for a record in case the user wants to go back to this Menu
+                    _previous_menu = _current_menu
+
+                    # set the _current_menu to the _next Menu so the _next Menu is called in the next loop
+                    _current_menu = _next
 
                     continue
