@@ -594,8 +594,7 @@ class Menu:
                     exit(0)
 
                 if user_choice in self._option_numbers:
-                    # clear_terminal()
-                    print(self.datamap)
+                    clear_terminal()
 
                     return user_choice
                 else:
@@ -624,7 +623,7 @@ class Menataur:
             exit(1)
 
     def run(self) -> list[dict[str, int]]:
-        current_menu: Menu = self._start_menu
+        current_menu: Menu = self.start_menu
         previous_menu: Menu = Menu()
         user_choices: list[dict[str, int]] = list()
 
@@ -638,11 +637,12 @@ class Menataur:
             # next menu is the problem resulting in the overpop of user choices
             match next_menu:
                 case "final_menu":
-                    # clear_terminal()
+                    clear_terminal()
 
-                    if next_menu == previous_menu:
-                        user_choices.pop()
-                        
+                    if menu_output == max(current_menu.datamap.keys()) and current_menu != self.start_menu:
+                        if len(user_choices) > 0:
+                            user_choices.pop()
+
                         continue
                     else:
                         user_choice_map = {current_menu.name: menu_output}
@@ -651,16 +651,16 @@ class Menataur:
                     return user_choices
                 case _:
                     if next_menu.main_menu != True:
-                        next_menu.datamap[max(next_menu.datamap.keys())] = current_menu
+                        previous_menu = current_menu
+                        next_menu.datamap[max(next_menu.datamap.keys())] = previous_menu
 
-                    if next_menu == previous_menu:
-                        user_choices.pop()
-                        
-                        continue
+                    if menu_output == max(current_menu.datamap.keys()) and current_menu != self.start_menu:
+                        if len(user_choices) > 0:
+                            user_choices.pop()
                     else:
                         user_choice_map = {current_menu.name: menu_output}
                         user_choices.append(user_choice_map)
-
+                    
                     current_menu = next_menu
 
                     continue
