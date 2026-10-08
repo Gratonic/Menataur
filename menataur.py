@@ -92,9 +92,12 @@ _used_menu_name: list[str] = list()
 # [=== Functions ===] #
 
 def clear_terminal():
-    # for Linux, MacOS, and Unix-Like operating systems
-    if sys.platform in ("linux", "darwin"):
+    if sys.platform == "linux":
         subprocess.run("clear", shell=True)
+    elif sys.platform == "darwin":
+        # for a MacOS, note: "command + k" like terminal clear
+        sys.stdout.write('\033c')
+        sys.stdout.flush()
     else:
         # for Windows and other obsolete operating systems
         subprocess.run("cls", shell=True)
@@ -430,8 +433,8 @@ class Menu:
         self._banner = "{title}\n{title_bar_color}{title_bar}\n{program_name_color}{program_name}{program_version_number_color}v{program_version_number}\n{operating_system_support_message_color}{operating_system_support_message}\n{reset}"
         self._option = "{option}{reset}"
 
-        # this variable will a hold a callable address for the input_prompt() function loaded with its parameter already
-        self._prompt = None
+        # this variable will a hold the callable address for the input_prompt() functions loaded with their parameter already
+        self._prompts: list[str] = list()
 
         # used to make it easier to sort through the final Menataur (menu interface) data
         self._name = str()
@@ -572,37 +575,80 @@ class Menu:
             prompt_message = f"{prompt.prompt_message}{Fore.RESET}"
 
         # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
-        self._prompt = partial(input_prompt, prompt_message)
+        prompt = partial(input_prompt, prompt_message)
+
+        # appends the callable prompt function object to the _prompts list
+        self._prompts.append(prompt)
+
+
+    def add_prompts(self, prompts: list[Prompt]) -> None:
+        for prompt in prompts:
+            if prompt.prompt_colored == True:
+                prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{Fore.RESET}"
+            else:
+                # note: the Fore.RESET is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+                prompt_message = f"{prompt.prompt_message}{Fore.RESET}"
+
+            # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
+            prompt = partial(input_prompt, prompt_message)
+
+            # appends the callable prompt function object to the _prompts list
+            self._prompts.append(prompt)
 
     def display(self) -> None:
         print(self._menu)
 
-    def run(self) -> int:
+    def run(self) -> list:
+        # stores the Menu's user_choices that will be returned (note: index 0 is the menu option selected)
+        user_choices: list = list()
+
         print(self._menu)
 
         if self.name == str():
-            print(f"{Fore.RED}[!] Error: Every Menu must be assigned a unique{Fore.YELLOW}name{Fore.RED}.")
+            print(f"{Fore.RED}[!] Error: Every Menu must be assigned a unique{Fore.YELLOW}name{Fore.RED}.{Fore.RESET}")
             exit(1)
 
-        while True:
-            user_choice = self._prompt()
+        try:
+            for prompt in self._prompts:
+                user_choice = prompt()
 
-            try:
-                user_choice = int(user_choice)
+                if prompt == self._prompts[0]:
+                    try:
+                        user_choice = int(user_choice)
 
-                if user_choice == 0:
-                    exit(0)
+                        if user_choice == 0:
+                            exit(0)
+                        elif user_choice == max(self._option_numbers):
+                            user_choices.append(user_choice)
 
-                if user_choice in self._option_numbers:
-                    clear_terminal()
+                            clear_terminal()
 
-                    return user_choice
+                            return user_choices
+                        elif user_choice in self._option_numbers:
+                            pass
+                        else:
+                            print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
+                            break
+                    except ValueError:
+                        print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
+                        break
+                    except Exception as e:
+                        print(e)
+                        exit(1)
                 else:
-                    print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
-            except ValueError:
-                print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
-            except Exception as e:
-                print(f"{Fore.RED}Invalid Option!{Fore.RESET}")
+                    pass
+
+                user_choices.append(user_choice)
+        except KeyboardInterrupt:
+            exit(0)
+        except Exception as e:
+            print(f"{Fore.RED}[!] Error: Unknown.{Fore.RESET}")
+            print(e)
+            exit(1)
+
+        clear_terminal()
+
+        return user_choices
 
 class Menataur:
     def __init__(self):
@@ -622,45 +668,49 @@ class Menataur:
             print(f"{Fore.BLUE}[?] Help: If you would like to use this {Fore.YELLOW}menu{Fore.BLUE} as your start_menu, set {Fore.YELLOW}main_menu=True{Fore.BLUE}.{Fore.RESET}")
             exit(1)
 
-    def run(self) -> list[dict[str, int]]:
+    def run(self) -> list[dict[str, list]]:
         current_menu: Menu = self.start_menu
         previous_menu: Menu = Menu()
-        user_choices: list[dict[str, int]] = list()
+        user_choices: list[dict[str, list]] = list()
 
         if self._start_menu == None:
             print(f"{Fore.RED}[!] Error: You must set a {Fore.YELLOW}start_menu{Fore.RED}.{Fore.RESET}")
 
         while True:
             menu_output = current_menu.run()
-            next_menu = current_menu.datamap[menu_output]
+            next_menu = current_menu.datamap[menu_output[0]]
 
             # next menu is the problem resulting in the overpop of user choices
             match next_menu:
                 case "final_menu":
                     clear_terminal()
 
-                    if menu_output == max(current_menu.datamap.keys()) and current_menu != self.start_menu:
+                    if menu_output[0] == max(current_menu.datamap.keys()) and current_menu != self.start_menu:
                         if len(user_choices) > 0:
                             user_choices.pop()
 
                         continue
                     else:
-                        user_choice_map = {current_menu.name: menu_output}
-                        user_choices.append(user_choice_map)
+                        menu_user_choices_map = {current_menu.name: menu_output}
+                        user_choices.append(menu_user_choices_map)
 
                     return user_choices
                 case _:
+                    clear_terminal()
+                    
                     if next_menu.main_menu != True:
                         previous_menu = current_menu
                         next_menu.datamap[max(next_menu.datamap.keys())] = previous_menu
 
-                    if menu_output == max(current_menu.datamap.keys()) and current_menu != self.start_menu:
+                    if menu_output[0] == max(current_menu.datamap.keys()) and current_menu != self.start_menu:
                         if len(user_choices) > 0:
                             user_choices.pop()
                     else:
-                        user_choice_map = {current_menu.name: menu_output}
-                        user_choices.append(user_choice_map)
+                        menu_user_choices_map = {current_menu.name: menu_output}
+                        user_choices.append(menu_user_choices_map)
                     
                     current_menu = next_menu
 
                     continue
+
+# https://rnsaffn.com/poison2/

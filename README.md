@@ -12,6 +12,13 @@ pip3 install menataur
 ```python
 import menataur
 
+# [=== Special Menu Objects ===] #
+
+# create instrument prompt
+instrument_prompt = menataur.Prompt()
+instrument_prompt.prompt_message_color = "light_cyan"
+instrument_prompt.prompt_message = "Do you play this instrument? "
+
 # [=== Test Menu 1 ===] #
 
 # create Banner
@@ -111,7 +118,7 @@ menu_2.name = "stringed_menu"
 
 menu_2.add_banner(banner_2)
 menu_2.add_options(options_2)
-menu_2.add_prompt(prompt_2)
+menu_2.add_prompts([prompt_2, instrument_prompt])
 
 menu_2.final_menu = True
 
@@ -164,7 +171,7 @@ menu_3.name = "keyboards_menu"
 
 menu_3.add_banner(banner_3)
 menu_3.add_options(options_3)
-menu_3.add_prompt(prompt_3)
+menu_3.add_prompts([prompt_3, instrument_prompt])
 
 menu_3.final_menu = True
 
@@ -215,7 +222,7 @@ menu_4.name = "percussion_menu"
 
 menu_4.add_banner(banner_4)
 menu_4.add_options(options_4)
-menu_4.add_prompt(prompt_4)
+menu_4.add_prompts([prompt_4, instrument_prompt])
 
 menu_4.final_menu = True
 
@@ -239,4 +246,6 @@ menu_interface.start_menu = menu_1
 
 # run the Menataur (menu interface)
 user_choices = menu_interface.run()
+
+print(user_choices)
 ```
