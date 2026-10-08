@@ -1,6 +1,6 @@
 [project]
 name = "menataur"
-version = "0.4.0"
+version = "0.5.0"
 description = "..."  # Add a short description
 requires-python = ">=3.10"
 dependencies = ["colorama>=0.4.6"]
