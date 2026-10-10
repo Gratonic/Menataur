@@ -413,7 +413,7 @@ class Menu:
     def __init__(self):
         # note: these strings are formated to construct menu elements (in the technical sense they are the elements)
         self._menu = str()
-        self._banner = "{title}\n{title_bar_color}{title_bar}\n{program_name_color}{program_name}{program_version_number_color}v{program_version_number}\n{operating_system_support_message_color}{operating_system_support_message}\n{reset}"
+        self._banner = "{title}\n{title_bar_color}{title_bar}\n{program_name_color}{program_name} {program_version_number_color}v{program_version_number}\n{operating_system_support_message_color}{operating_system_support_message}\n{reset}"
         self._option = "{option}{reset}"
 
         # this variable will a hold the callable address for the input_prompt() functions loaded with their parameter already
