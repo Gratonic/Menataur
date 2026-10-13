@@ -638,7 +638,7 @@ class Menu:
             if user_choice in self._option_numbers and user_choice in self._prompts.keys():
                 prompts = self._prompts[user_choice]
 
-                if isinstance(prompts, list):
+                if isinstance(prompts, list) and len(prompts) >= 1:
                     for prompt in prompts:
                         user_choice = prompt()
 
