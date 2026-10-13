@@ -417,7 +417,7 @@ class Menu:
         self._option = "{option}{reset}"
 
         # this variable will a hold the callable address for the input_prompt() functions loaded with their parameter already
-        self._prompts: list[str] = list()
+        self._prompts: dict[int, str | list[str]] = dict()
 
         # used to make it easier to sort through the final Menataur (menu interface) data
         self._name = str()
@@ -560,23 +560,43 @@ class Menu:
         # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
         prompt = partial(input_prompt, prompt_message)
 
-        # appends the callable prompt function object to the _prompts list
-        self._prompts.append(prompt)
+        # adds the prompt to the _prompts dictionary; note: this method assums there is no custom prompts and main prompt is key 0
+        self._prompts[0] = prompt
 
+    def add_prompts(self, prompts: dict[int, list[Prompt]]) -> None:
+        for opt_num, inner_prompts in prompts.items():
+            # for every prompt except that is not located at inner_prompts[0]
+            prompt_functions: list[str] = list()
 
-    def add_prompts(self, prompts: list[Prompt]) -> None:
-        for prompt in prompts:
-            if prompt.prompt_colored == True:
-                prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{fore_reset}"
-            else:
-                # note: the fore_reset is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
-                prompt_message = f"{prompt.prompt_message}{fore_reset}"
+            for prompt in inner_prompts:
+                if opt_num == 0:
+                    if inner_prompts[0].prompt_colored == True:
+                        prompt_message = f"{inner_prompts[0].prompt_message_color}{inner_prompts[0].prompt_message}{fore_reset}"
+                    else:
+                        # note: the fore_reset is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+                        prompt_message = f"{inner_prompts[0].prompt_message}{fore_reset}"
 
-            # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
-            prompt = partial(input_prompt, prompt_message)
+                    # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
+                    prompt = partial(input_prompt, prompt_message)
 
-            # appends the callable prompt function object to the _prompts list
-            self._prompts.append(prompt)
+                    self._prompts[opt_num] = prompt
+
+                    break
+                else:
+                    if prompt.prompt_colored == True:
+                        prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{fore_reset}"
+                    else:
+                        # note: the fore_reset is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+                        prompt_message = f"{prompt.prompt_message}{fore_reset}"
+
+                    # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
+                    prompt = partial(input_prompt, prompt_message)
+
+                    prompt_functions.append(prompt)
+
+            if opt_num != 0:
+                self._prompts[opt_num] = prompt_functions
+            
 
     def display(self) -> None:
         print(self._menu)
@@ -615,11 +635,14 @@ class Menu:
                     print(e)
                     exit(1)
 
-            if len(self._prompts) > 1:
-                for prompt in self._prompts[1:]:
-                    user_choice = prompt()
-                    user_choices.append(user_choice)
+            if user_choice in self._option_numbers and user_choice in self._prompts.keys():
+                prompts = self._prompts[user_choice]
 
+                if isinstance(prompts, list):
+                    for prompt in prompts:
+                        user_choice = prompt()
+
+                        user_choices.append(user_choice)
         except KeyboardInterrupt:
             exit(0)
         except Exception as e:

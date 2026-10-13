@@ -19,6 +19,9 @@ instrument_prompt = menataur.Prompt()
 instrument_prompt.prompt_message_color = "light_cyan"
 instrument_prompt.prompt_message = "Do you play this instrument? "
 
+# special color
+menataur.add_foreground_color("hot_pink", "\033[38;5;205m")
+
 # [=== Test Menu 1 ===] #
 
 # create Banner
@@ -33,7 +36,7 @@ banner_1.title = r"""
  \___/_| |_|___/\__|_|   \__,_|_| |_| |_|\___|_| |_|\__|___/"""
 banner_1.title_colors = ["cyan", "yellow", "green", "magenta"]
 banner_1.title_bar = "_______________________________________________________________/"
-banner_1.title_bar_color = "blue"
+banner_1.title_bar_color = "hot_pink"
 banner_1.program_name = "Menataur"
 banner_1.program_name_color = "blue"
 banner_1.program_version_number = 1.0 
@@ -118,7 +121,12 @@ menu_2.name = "stringed_menu"
 
 menu_2.add_banner(banner_2)
 menu_2.add_options(options_2)
-menu_2.add_prompts([prompt_2, instrument_prompt])
+menu_2.add_prompts({
+    0: [prompt_2],
+    1: [instrument_prompt],
+    2: [instrument_prompt],
+    3: [instrument_prompt]
+})
 
 menu_2.final_menu = True
 
@@ -171,7 +179,12 @@ menu_3.name = "keyboards_menu"
 
 menu_3.add_banner(banner_3)
 menu_3.add_options(options_3)
-menu_3.add_prompts([prompt_3, instrument_prompt])
+menu_3.add_prompts({
+    0: [prompt_3],
+    1: [instrument_prompt],
+    2: [instrument_prompt],
+    3: [instrument_prompt]
+})
 
 menu_3.final_menu = True
 
@@ -222,7 +235,12 @@ menu_4.name = "percussion_menu"
 
 menu_4.add_banner(banner_4)
 menu_4.add_options(options_4)
-menu_4.add_prompts([prompt_4, instrument_prompt])
+menu_4.add_prompts({
+    0: [prompt_4],
+    1: [instrument_prompt],
+    2: [instrument_prompt],
+    3: [instrument_prompt]
+})
 
 menu_4.final_menu = True
 
