@@ -79,180 +79,23 @@ menu.display()
 # [=== Imports ===] #
 
 from functools import partial
-import subprocess
-import random
-import sys
+
+import utils
 
 # [=== Global Variables ===]
+
+foreground_colors = utils.foreground_colors
 
 # used to ensure the user does not give two or more Menu's the same name
 _used_menu_name: list[str] = list()
 
-# note: this dictionary is global so that users are able to add their own custom colors to use
-foreground_colors = {
-"blue": "\033[34m", "light_blue": "\033[94m",
-"cyan": "\033[36m", "light_cyan": "\033[96m",
-"red": "\033[31m", "light_red": "\033[91m",
-"green": "\033[32m", "light_green": "\033[92m",
-"yellow": "\033[33m", "light_yellow": "\033[93m",
-"magenta": "\033[35m", "light_magenta": "\033[95m",
-"black": "\033[30m", "white": "\033[37m",
-"gray": "\033[90m", "grey": "\033[90m"
-}
-
-# for resetting the foreground color
-fore_reset = "\033[0m"
-
 # [=== Functions ===] #
 
-def clear_terminal():
-    if sys.platform == "linux":
-        subprocess.run("clear", shell=True)
-    elif sys.platform == "darwin":
-        # for a MacOS, note: "command + k" like terminal clear
-        sys.stdout.write('\033c')
-        sys.stdout.flush()
-    else:
-        # for Windows and other obsolete operating systems
-        subprocess.run("cls", shell=True)
-
-def add_foreground_color(color_name: str, color_code: str) -> None:
-    foreground_colors[color_name] = color_code
-
-def validate_foreground_color(fore_color: str) -> str:
-    color = fore_color.lower()
-    if color in foreground_colors:
-        return foreground_colors[color]
-    else:
-        print(f"{foreground_colors["red"]}[!] Error: {foreground_colors["yellow"]}{color}{foreground_colors["red"]} is not a valid/supported color in this program.{fore_reset}")
-        print(f"{Fore.GREEN}The following colors are supported:{fore_reset}")
-        for color_key in foreground_colors.keys():
-            if color_key != "gray" or color_key != "grey":
-                print(f"{foreground_colors[color_key]}{color_key}{fore_reset}")
-            else:
-                print(f"{foreground_colors[color_key]}gray/grey{fore_reset}")
-
-        exit(1)
-
-"""
-note: 
-the reason for the complex approach in this function is to avoid large amounts of color repeats, 
-which was a major issue with a previous one-liner approach
-"""
-def paint_text(text: str, colors: list) -> str:
-    # avoids waisting compute time with an algorithm if there is only one color provided
-    if len(colors) == 1:
-        return f"{validate_foreground_color(colors[0])}{text}{fore_reset}"
-
-    # validates the colors and retrieves their actual color values
-    colors = [validate_foreground_color(fore_color=color) for color in colors]
-    # creates a list of every character in the given text
-    characters = list(text)
-    # keeps track of the colors list index numbers that can temporarily not be used
-    banned_indexes = set()
-
-    # len(colors) %2 == 0: even, else: odd 
-    if len(colors) % 2 == 0:
-        # needed colors list index(s)
-        middle_index = len(colors) // 2
-
-        # note: used to determine the random index number
-        low = middle_index
-        high = middle_index
-
-        for char in range(len(text)):
-            # avoids waisting compute time on non-printable characters (with the needed exceptions)
-            if characters[char] == " ":
-                continue
-            elif characters[char].isprintable() == True or characters[char] == "\\" or characters[char] == "\'" or characters[char] == '\"':
-                pass
-            else:
-                continue
-
-            # note: loops until a valid index number has been selected
-            while True:
-                selected_index = random.randint(low, high)
-
-                if selected_index not in banned_indexes:
-                    break
-
-            # add the color code for the current character
-            characters[char] = colors[selected_index] + characters[char]
-
-            if low != 0 and high != len(colors) - 1:
-                # ban the current low and high indexes temporarily
-                banned_indexes.add(low)
-                banned_indexes.add(high)
-
-                # fetch the new low and high indexes; note: center -> ends
-                low -= 1
-                high += 1
-            else:
-                # reset the low and high indexes values along with the banned_indexes set
-                low = middle_index
-                high = middle_index
-
-                banned_indexes = set()
-
-        # create the new text string
-        text = "".join(characters)
-
-        return f"{text}{fore_reset}"
-    else:
-        # needed colors list index(s)
-        middle_index = ((len(colors) - 1) // 2) + 1
-
-        # note: used to determine the random index number
-        low = 0
-        high = len(colors) - 1
-
-        for char in range(len(text)):
-            # avoids waisting compute time on non-printable characters (with the needed exceptions)
-            if characters[char] == " ":
-                continue
-            elif characters[char].isprintable() == True or characters[char] == "\\" or characters[char] == "\'" or characters[char] == '\"':
-                pass
-            else:
-                continue
-
-            # note: loops until a valid index number has been selected
-            while True:
-                selected_index = random.randint(low, high)
-
-                if selected_index not in banned_indexes:
-                    break
-
-            # add the color code for the current character
-            characters[char] = colors[selected_index] + characters[char]
-
-            if low == middle_index or high == middle_index:
-                # reset the low and high indexes values along with the banned_indexes set
-                low = 0
-                high = len(colors) - 1
-
-                banned_indexes = set()
-            else:
-                # ban the current low and high indexes temporarily
-                banned_indexes.add(low)
-                banned_indexes.add(high)
-
-                # fetch the new low and high indexes; note: ends -> center
-                low += 1
-                high -= 1
-
-        # create the new text string
-        text = "".join(characters)
-
-        return f"{text}{fore_reset}"
-
-def input_prompt(prompt_message) -> str:
-    try:
-        user_choice = input(prompt_message)
-
-        return user_choice
-    except KeyboardInterrupt:
-        print("\n")
-        exit(0)
+# stores the address of the utils functions for fast access
+clear_terminal = utils.clear_terminal
+add_foreground_color = utils.add_foreground_color
+validate_foreground_color = utils.validate_foreground_color
+paint_text = utils.paint_text
 
 # [=== Classes ===] #
 
@@ -367,22 +210,22 @@ class Options:
     def add_option(self, option_description: str, option_number: int, option_name: str) -> None:
         # validation
         if option_number == 0:
-            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}option_number 0{foreground_colors["red"]} is reserved for the exit option (automatically included).{fore_reset}")
-            sys.exit(1)
+            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}option_number 0{foreground_colors["red"]} is reserved for the exit option (automatically included).{foreground_colors["reset"]}")
+            exit(1)
 
         if option_number < 0:
             print(f"{foreground_colors["red"]}[!] Error: The chosen {foreground_colors["yellow"]}option_number{foreground_colors["red"]} can not be negative.")
         
         if option_number in self.options.keys():
-            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}option_number {option_number}{foreground_colors["red"]} is already in use.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}option_number {option_number}{foreground_colors["red"]} is already in use.{foreground_colors["reset"]}")
 
         if self.option_description_color != str() and self.option_number_color != str() and self.option_description_color != str():
             # construct and add the option to the options dictionary; note: color reset is handled when the element is added to a Menu
-            option = f"{self._option_description_color}{option_description}{fore_reset}\n{self._option_number_color}{option_number}) {fore_reset}{self._option_name_color}{option_name}"
+            option = f"{self._option_description_color}{option_description}{foreground_colors["reset"]}\n{self._option_number_color}{option_number}) {foreground_colors["reset"]}{self._option_name_color}{option_name}"
 
             self.options[option_number] = option
         else:
-            print(f"{foreground_colors["red"]}[!] Error: You must define the {foreground_colors["yellow"]}Options object's colors{foreground_colors["red"]} before setting the options, otherwise the Options object's colors won't render.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: You must define the {foreground_colors["yellow"]}Options object's colors{foreground_colors["red"]} before setting the options, otherwise the Options object's colors won't render.{foreground_colors["reset"]}")
             exit(1)
 
 class Prompt:
@@ -439,7 +282,7 @@ class Menu:
     @name.setter
     def name(self, menu_name: str):
         if menu_name in _used_menu_name:
-            print(f"{foreground_colors["red"]}[!] Error: Every Menu must be assigned a unique {foreground_colors["yellow"]}name{foreground_colors["red"]}.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: Every Menu must be assigned a unique {foreground_colors["yellow"]}name{foreground_colors["red"]}.{foreground_colors["reset"]}")
             exit(1)
         
         _used_menu_name.append(menu_name)
@@ -478,7 +321,7 @@ class Menu:
     def datamap(self, map: dict):
         # ensure this is not a final menu because final Menus do not need a user configured datamap
         if self.final_menu == True:
-            print(f"{foreground_colors["red"]}[!] Error: This is a {foreground_colors["yellow"]}Final Menu{foreground_colors["red"]}, it should not have a datamap.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: This is a {foreground_colors["yellow"]}Final Menu{foreground_colors["red"]}, it should not have a datamap.{foreground_colors["reset"]}")
             exit(1)
 
         # add the exit and previous menu (if applicable) options 
@@ -491,7 +334,7 @@ class Menu:
 
         # ensure the user has provided map keys that match the option numbers and store the map if so
         if map.keys() != self._datamap.keys():
-            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}map keys{foreground_colors["red"]} do not match the {foreground_colors["yellow"]}option numbers{foreground_colors["red"]}.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}map keys{foreground_colors["red"]} do not match the {foreground_colors["yellow"]}option numbers{foreground_colors["red"]}.{foreground_colors["reset"]}")
             print(map.keys())
             print(self._datamap.keys())
             exit(1)
@@ -513,7 +356,7 @@ class Menu:
             program_version_number=banner.program_version_number,
             operating_system_support_message_color=banner.operating_system_support_message_color,
             operating_system_support_message=banner.operating_system_support_message,
-            reset=fore_reset
+            reset=foreground_colors["reset"]
         ))
 
     def add_options(self, options: Options) -> None:
@@ -522,13 +365,13 @@ class Menu:
 
         self._add_element(self._option.format(
             option=exit_option,
-            reset=fore_reset
+            reset=foreground_colors["reset"]
         ))
 
         for option_key in options.options.keys():
             self._add_element(self._option.format(
                 option=options.options[option_key],
-                reset=fore_reset
+                reset=foreground_colors["reset"]
             ))
 
         # add the previous menu option if necessary
@@ -538,7 +381,7 @@ class Menu:
 
             self._add_element(self._option.format(
                 option=previous_menu_option,
-                reset=fore_reset
+                reset=foreground_colors["reset"]
             ))
 
             # add the previous_menu_option with its respective option number to the options dictionary to keep a record of it
@@ -552,13 +395,13 @@ class Menu:
 
     def add_prompt(self, prompt: Prompt) -> None:
         if prompt.prompt_colored == True:
-            prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{fore_reset}"
+            prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{foreground_colors["reset"]}"
         else:
-            # note: the fore_reset is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
-            prompt_message = f"{prompt.prompt_message}{fore_reset}"
+            # note: the foreground_colors["reset"] is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+            prompt_message = f"{prompt.prompt_message}{foreground_colors["reset"]}"
 
         # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
-        prompt = partial(input_prompt, prompt_message)
+        prompt = partial(input, prompt_message)
 
         # adds the prompt to the _prompts dictionary; note: this method assums there is no custom prompts and main prompt is key 0
         self._prompts[0] = prompt
@@ -571,26 +414,26 @@ class Menu:
             for prompt in inner_prompts:
                 if opt_num == 0:
                     if inner_prompts[0].prompt_colored == True:
-                        prompt_message = f"{inner_prompts[0].prompt_message_color}{inner_prompts[0].prompt_message}{fore_reset}"
+                        prompt_message = f"{inner_prompts[0].prompt_message_color}{inner_prompts[0].prompt_message}{foreground_colors["reset"]}"
                     else:
-                        # note: the fore_reset is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
-                        prompt_message = f"{inner_prompts[0].prompt_message}{fore_reset}"
+                        # note: the foreground_colors["reset"] is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+                        prompt_message = f"{inner_prompts[0].prompt_message}{foreground_colors["reset"]}"
 
                     # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
-                    prompt = partial(input_prompt, prompt_message)
+                    prompt = partial(input, prompt_message)
 
                     self._prompts[opt_num] = prompt
 
                     break
                 else:
                     if prompt.prompt_colored == True:
-                        prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{fore_reset}"
+                        prompt_message = f"{prompt.prompt_message_color}{prompt.prompt_message}{foreground_colors["reset"]}"
                     else:
-                        # note: the fore_reset is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
-                        prompt_message = f"{prompt.prompt_message}{fore_reset}"
+                        # note: the foreground_colors["reset"] is added in case the user has forgotten to include the reset code (in the case that they manually added the color codes in their prompt_message)
+                        prompt_message = f"{prompt.prompt_message}{foreground_colors["reset"]}"
 
                     # creates a callable function object with the parameter; think of it like a loaded gun ready to fire
-                    prompt = partial(input_prompt, prompt_message)
+                    prompt = partial(input, prompt_message)
 
                     prompt_functions.append(prompt)
 
@@ -606,7 +449,7 @@ class Menu:
         print(self._menu)
 
         if self.name == str():
-            print(f"{foreground_colors["red"]}[!] Error: Every Menu must be assigned a unique{foreground_colors["yellow"]}name{foreground_colors["red"]}.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: Every Menu must be assigned a unique{foreground_colors["yellow"]}name{foreground_colors["red"]}.{foreground_colors["reset"]}")
             exit(1)
 
         try:
@@ -626,11 +469,11 @@ class Menu:
                         user_choices.append(user_choice)
                         break
                     else:
-                        print(f"{foreground_colors["red"]}Invalid Option!{fore_reset}")
+                        print(f"{foreground_colors["red"]}Invalid Option!{foreground_colors["reset"]}")
                 except ValueError:
-                    print(f"{foreground_colors["red"]}Invalid Option!{fore_reset}")
+                    print(f"{foreground_colors["red"]}Invalid Option!{foreground_colors["reset"]}")
                 except IndexError:
-                    print(f"{foreground_colors["red"]}Invalid Option!{fore_reset}")
+                    print(f"{foreground_colors["red"]}Invalid Option!{foreground_colors["reset"]}")
                 except Exception as e:
                     print(e)
                     exit(1)
@@ -646,7 +489,7 @@ class Menu:
         except KeyboardInterrupt:
             exit(0)
         except Exception as e:
-            print(f"{foreground_colors["red"]}[!] Error: Unknown.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: Unknown.{foreground_colors["reset"]}")
             print(e)
             exit(1)
 
@@ -668,8 +511,8 @@ class Menataur:
         if menu.main_menu == True:
             self._start_menu = menu
         else:
-            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}start_menu{foreground_colors["red"]} must be a {foreground_colors["yellow"]}main_menu{foreground_colors["red"]}.{fore_reset}")
-            print(f"{foreground_colors["blue"]}[?] Help: If you would like to use this {foreground_colors["yellow"]}menu{foreground_colors["blue"]} as your start_menu, set {foreground_colors["yellow"]}main_menu=True{foreground_colors["blue"]}.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}start_menu{foreground_colors["red"]} must be a {foreground_colors["yellow"]}main_menu{foreground_colors["red"]}.{foreground_colors["reset"]}")
+            print(f"{foreground_colors["blue"]}[?] Help: If you would like to use this {foreground_colors["yellow"]}menu{foreground_colors["blue"]} as your start_menu, set {foreground_colors["yellow"]}main_menu=True{foreground_colors["blue"]}.{foreground_colors["reset"]}")
             exit(1)
 
     def run(self) -> list[dict[str, list]]:
@@ -678,7 +521,7 @@ class Menataur:
         user_choices: list[dict[str, list]] = list()
 
         if self._start_menu == None:
-            print(f"{foreground_colors["red"]}[!] Error: You must set a {foreground_colors["yellow"]}start_menu{foreground_colors["red"]}.{fore_reset}")
+            print(f"{foreground_colors["red"]}[!] Error: You must set a {foreground_colors["yellow"]}start_menu{foreground_colors["red"]}.{foreground_colors["reset"]}")
 
         while True:
             menu_output = current_menu.run()
