@@ -1,13 +1,50 @@
-# What is Menataur?
+[![PyPI Downloads](https://img.shields.io/badge/PyPI%20Downloads-332%2Fmonth-blue)](https://pypistats.org/packages/menataur)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Menataur is a menu interface builder module for Python3.10.x. It is super easy to use and makes
-constructing menu interfaces a breeze, turning hours, days, or even months of work into just a few minutes.
+# Description
 
-# How do you construct an awesome menu interface with Menataur? Here's a tested example...
+Menataur is a python module for building simple menu interfaces for the terminal. It is super easy to use and makes constructing menu interfaces a breeze, turning hours, days, or even months of work into just a few minutes.
+
+---
+
+## Example Menu Interface Result
+![Main Menu Example](Images/main_menu_example.png)
+For more example images see [Images](Images/)
+
+---
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Well Structured** | Clean and organized API |
+| **Highly Customizable** | Every Menu can be finely customized to meet your needs |
+| **Support for Custom Input Prompts** | You can create custom prompts for every option to collect user data exactly as needed or just customize the main prompt if that's what you want/need |
+| **Simple API** | Intuitive, easy-to-use, and object-oriented design |
+| **Menu Navigation** | Built-in back-and-forth navigation between each Menu |
+| **Great Color Support** | Multiple built-in colors with a way to add custom colors if needed |
+| **Dependency Free** | Only uses Python's built-in libraries |
+
+---
+
+## Structure
+
+| Component | Purpose |
+|-----------|---------|
+| **Banner** | Makes up the header section of a Menu object. |
+| **Options** | Makes up the body section of a Menu object. |
+| **Prompt** | Makes up the footer section of a Menu object. |
+| **Menu** | Combines a Banner, Options, and Prompt(s) object(s) to make a Menu. |
+| **Menataur** | Makes up a Menu Interface using a datamapped start_menu (must be a main menu) and handles the back-and-forth navigation between each Menu. |
+
+## Installation
 
 ```bash
 pip3 install menataur
 ```
+
+## Example Usage
 
 ```python
 import menataur
@@ -267,3 +304,6 @@ user_choices = menu_interface.run()
 
 print(user_choices)
 ```
+
+### support
+If you would like to show your support for Menataur feel free to star this repository and spread the word. Thank you for your support!
