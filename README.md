@@ -308,4 +308,4 @@ print(user_choices)
 ```
 
 ### support
-If you would like to show your support for Menataur feel free to star this repository and spread the word. Thank you for your support!
+If you would like to show your support for Menataur feel free to star this <a href="https://github.com/gratonic/menataur">repository</b> and spread the word. Thank you for your support!
