@@ -1,6 +1,6 @@
 [project]
 name = "menataur"
-version = "0.9.1"
+version = "1.0.0"
 description = "Menataur is an easy-to-use python module for building colorful text-based menu interfaces for the terminal."
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
