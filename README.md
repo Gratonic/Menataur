@@ -1,6 +1,8 @@
-[![PyPI Downloads](https://img.shields.io/badge/PyPI%20Downloads-332%2Fmonth-blue)](https://pypistats.org/packages/menataur)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-brightgreen)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://pypistats.org/packages/menataur"><img src="https://img.shields.io/badge/PyPI%20Downloads-332%2Fmonth-blue" alt="PyPI Downloads"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen" alt="Python 3.10+"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
 # Description
 
