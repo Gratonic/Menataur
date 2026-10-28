@@ -79,6 +79,7 @@ menu.display()
 # [=== Imports ===] #
 
 from functools import partial
+import sys
 
 import utils
 
@@ -211,7 +212,7 @@ class Options:
         # validation
         if option_number == 0:
             print(f"{foreground_colors["red"]}[!] Error: The {foreground_colors["yellow"]}option_number 0{foreground_colors["red"]} is reserved for the exit option (automatically included).{foreground_colors["reset"]}")
-            exit(1)
+            sys.exit(1)
 
         if option_number < 0:
             print(f"{foreground_colors["red"]}[!] Error: The chosen {foreground_colors["yellow"]}option_number{foreground_colors["red"]} can not be negative.")
@@ -560,5 +561,3 @@ class Menataur:
                     current_menu = next_menu
 
                     continue
-
-# https://rnsaffn.com/poison2/
