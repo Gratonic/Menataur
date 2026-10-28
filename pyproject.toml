@@ -1,6 +1,6 @@
 [project]
 name = "menataur"
-version = "0.8.0"
+version = "0.9.0"
 description = "Python module for building Menu Interfaces for the terminal. Checkout the github (https://github.com/gratonic/menataur) for usage information."
 requires-python = ">=3.10"
 
