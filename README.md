@@ -11,8 +11,8 @@ Menataur is a python module for building simple menu interfaces for the terminal
 ---
 
 ## Example Menu Interface Result
-![Main Menu Example](Images/main_menu_example.png)
-For more example images see [Images](Images/)
+![Main Menu Example](images/main_menu_example.png)
+For more example images see [images](images/)
 
 ---
 

@@ -31,7 +31,7 @@ setup.cfg
 MANIFEST
 
 # Ignore test file
-Src/test.py
+src/test.py
 
 # Ignore the venv dir
 *menataur_venv
