@@ -37,7 +37,7 @@ banner.title_bar = "_________________________________________________/"
 banner.title_bar_color = "blue"
 banner.program_name = "Menataur"
 banner.program_name_color = "blue"
-banner.program_version_number = 1.0 
+banner.program_version_number = 1.0
 banner.program_version_number_color = "yellow"
 banner.operating_system_support_message = "This Program Supports Linux, MacOS, and Windows"
 banner.operating_system_support_message_color = "light_green"
@@ -182,7 +182,7 @@ class Banner:
         self.operating_system_support_message = "This Program Supports: Linux, MacOS, and Windows"
 
         # element colors
-        self._title_colors: list[str] = list()
+        self._title_colors = list[str]()
         self._title_bar_color = str()
         self._program_name_color = str()
         self._program_version_number_color = str()
@@ -234,7 +234,7 @@ class Banner:
 class Options:
     def __init__(self):
         # elements #
-        self.options: dict[int, str] = dict()
+        self.options = dict[int, str]()
 
         # element colors
         self._option_description_color = str()
@@ -332,7 +332,7 @@ class Menu:
         self._option = "{option}{reset}"
 
         # this variable will a hold the callable address for the input_prompt() functions loaded with their parameter already
-        self._prompts: dict[int, str | list[str]] = dict()
+        self._prompts = dict[int, str | list[str]]()
 
         # used to make it easier to sort through the final Menataur (menu interface) data
         self._name = str()
@@ -341,9 +341,9 @@ class Menu:
         # used to determine wether or not this is the final menu in a menu path
         self._final_menu = False
         # used to store the option numbers for basic input validation in the run_menu method
-        self._option_numbers: set[int] = set()
+        self._option_numbers = set[int]()
         # used to store the Option to Menu mappings - required if the user want's to use this Menu in a Menataur
-        self._datamap: dict[int, Menu | str] = dict()
+        self._datamap = dict[int, Menu | str]()
 
     # --- getter/setter properties --- #
 
@@ -369,7 +369,7 @@ class Menu:
     def final_menu(self, value: bool):
         if value == True:
             # used to create a special data map for the final menu
-            _final_menu_datamap: dict[int, str] = dict()
+            _final_menu_datamap = dict[int, str]()
             # used to know when to stop looping; note: 1 is not subtracted for previous menu because of the way the range() function works
             _last_option = max(self._option_numbers)
 
@@ -481,7 +481,7 @@ class Menu:
     def add_prompts(self, prompts: dict[int, list[Prompt]]) -> None:
         for opt_num, inner_prompts in prompts.items():
             # for every prompt except that is not located at inner_prompts[0]
-            prompt_functions: list[str] = list()
+            prompt_functions = list[str]()
 
             for prompt in inner_prompts:
                 if opt_num == 0:
@@ -517,7 +517,7 @@ class Menu:
         print(self._menu)
 
     def run(self) -> list:
-        user_choices: list = list()
+        user_choices = list()
         print(self._menu)
 
         if self.name == str():
